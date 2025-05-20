@@ -1,0 +1,6 @@
+name: my-project
+scaffold:
+  frontend:
+    framework: "react"
+    css: "tailwind"
+    lang: "typescript"

@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"os"
+	"sersi/cmd/build"
 	"sersi/cmd/create"
 	initconifg "sersi/cmd/init"
 
@@ -36,6 +37,7 @@ func Execute() {
 func addSubcommand() {
 	rootCmd.AddCommand(initconifg.Cmd)
 	rootCmd.AddCommand(create.Cmd)
+	rootCmd.AddCommand(build.Cmd)
 }
 
 func init() {
