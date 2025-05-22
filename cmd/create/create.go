@@ -2,8 +2,11 @@ package create
 
 import (
 	"fmt"
+	"os"
 	"sersi/core"
+	"sersi/model"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +17,7 @@ var (
 	cssPrompt       = "How would you like to style this project"
 	langPrompt      = "What language will you be using"
 	defaultName     = "my-project"
-	frameworkItems  = []string{"React", "Vue", "Vanilla"}
+	frameworkItems  = []string{"React", "Vue", "Vanilla", "Svelte"}
 	cssItems        = []string{"Tailwind", "Bootstrap", "Traditional"}
 	langItems       = []string{"Typescript", "Javascript"}
 )
@@ -23,7 +26,7 @@ var Cmd = &cobra.Command{
 	Use:   "create",
 	Short: "Genrate Scaffold Application",
 	Long:  `Genrate Scaffold Application with customizable options`,
-	Run:   runPrompts,
+	Run:   Run,
 }
 
 var selectTemplate = promptui.SelectTemplates{
@@ -39,69 +42,69 @@ func init() {
 	Cmd.Flags().StringP("lang", "l", "js", "javascript or Typescript")
 }
 
-func runPrompts(cmd *cobra.Command, args []string) {
-	name, err := helperPrompt(cmd, "name", promptui.Prompt{Label: namePrompt, Default: defaultName})
+func Run(cmd *cobra.Command, args []string) {
+	p := tea.NewProgram(model.InitialModel())
+	finalModel, err := p.Run()
 	if err != nil {
-		fmt.Sprintf("Error Occured: %s", err.Error())
+		fmt.Printf("Error running program: %s", err)
+		os.Exit(1)
 	}
 
-	framework, err := helperSelect(cmd, "framework", promptui.Select{Label: frameworkPrompt, Items: frameworkItems})
-	if err != nil {
-		fmt.Sprintf("Error Occured: %s", err.Error())
+	m := finalModel.(model.Model)
+	if m.Name == "" {
+		os.Exit(1)
 	}
-
-	css, err := helperSelect(cmd, "css", promptui.Select{Label: cssPrompt, Items: cssItems})
-	if err != nil {
-		fmt.Sprintf("Error Occured: %s", err.Error())
+	if m.Framework == "" {
+		os.Exit(1)
 	}
-
-	lang, err := helperSelect(cmd, "lang", promptui.Select{Label: langPrompt, Items: langItems})
-	if err != nil {
-		fmt.Sprintf("Error Occured: %s", err.Error())
+	if m.Css == "" {
+		os.Exit(1)
+	}
+	if m.Lang == "" {
+		os.Exit(1)
 	}
 
 	scaffold := core.NewScaffoldBuilder().
-		ProjectName(name).
-		Framework(framework).
-		CSS(css).
-		Language(lang).
-		Build()
+		ProjectName(m.Name).
+		Framework(m.Framework).
+		CSS(m.Css).
+		Language(m.Lang).Build()
 
 	scaffold.Execute()
 }
 
-func helperPrompt(cmd *cobra.Command, flagName string, prompt promptui.Prompt) (string, error) {
-	var value string
-	if cmd.Flags().Changed(flagName) {
-		value, _ = cmd.Flags().GetString(flagName)
-		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
+// func helperPrompt(cmd *cobra.Command, flagName string, prompt promptui.Prompt) (string, error) {
+// 	var value string
+// 	if cmd.Flags().Changed(flagName) {
+// 		value, _ = cmd.Flags().GetString(flagName)
+// 		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
 
-	} else {
-		var err error
-		value, err = prompt.Run()
+// 	} else {
+// 		var err error
+// 		value, err = prompt.Run()
 
-		if err != nil {
-			return "", err
-		}
-	}
+// 		if err != nil {
+// 			return "", err
+// 		}
+// 	}
 
-	return value, nil
-}
+// 	return value, nil
+// }
 
-func helperSelect(cmd *cobra.Command, flagName string, prompt promptui.Select) (string, error) {
-	var value string
-	if cmd.Flags().Changed(flagName) {
-		value, _ = cmd.Flags().GetString(flagName)
-		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
-	} else {
-		var err error
-		prompt.Templates = &selectTemplate
-		_, value, err = prompt.Run()
+// func helperSelect(cmd *cobra.Command, flagName string, prompt promptui.Select) (string, error) {
+// 	var value string
+// 	if cmd.Flags().Changed(flagName) {
+// 		value, _ = cmd.Flags().GetString(flagName)
+// 		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
+// 	} else {
+// 		var err error
+// 		prompt.Templates = &selectTemplate
+// 		_, value, err = prompt.Run()
 
-		if err != nil {
-			return "", err
-		}
-	}
+// 		if err != nil {
+// 			return "", err
+// 		}
+// 	}
 
-	return value, nil
-}
+// 	return value, nil
+// }

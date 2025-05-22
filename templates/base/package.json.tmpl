@@ -33,11 +33,17 @@
     "@eslint/js": "^9.26.0",
     {{- if eq .Framework "vue" }}
     "@vitejs/plugin-vue": "^4.4.1",
-    "eslint-plugin-vue": "^9.8.0",
+    {{- if eq .Language "ts" }}
+    "@vue/tsconfig": "^0.7.0",
+    "vue-tsc": "^2.2.10"
+    {{- end }}
     {{- else if eq .Framework "svelte" }}
-    "@sveltejs/vite-plugin-svelte": "^4.1.0",
-    "eslint-plugin-svelte3": "^4.0.0",
-    "@tsconfig/svelte": "^4.0.0"
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tsconfig/svelte": "^4.0.0",
+    {{- if eq .Language "ts" }}
+    "@tsconfig/svelte": "^5.0.4",
+    "svelte-check": "^4.1.7",
+    {{- end }}
     {{- else if eq .Framework "react" }}
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
