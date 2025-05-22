@@ -51,12 +51,24 @@ func Run(cmd *cobra.Command, args []string) {
 	}
 
 	m := finalModel.(model.Model)
+	if m.Name == "" {
+		os.Exit(1)
+	}
+	if m.Framework == "" {
+		os.Exit(1)
+	}
+	if m.Css == "" {
+		os.Exit(1)
+	}
+	if m.Lang == "" {
+		os.Exit(1)
+	}
+
 	scaffold := core.NewScaffoldBuilder().
 		ProjectName(m.Name).
 		Framework(m.Framework).
 		CSS(m.Css).
-		Language(m.Lang).
-		Build()
+		Language(m.Lang).Build()
 
 	scaffold.Execute()
 }
