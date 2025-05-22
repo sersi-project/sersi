@@ -75,6 +75,10 @@ func (t *Template) Generate() error {
 			continue
 		}
 
+		if t.Framework == "react" && (file.outputFile == "src/main.js" || file.outputFile == "src/main.ts") {
+			continue
+		}
+
 		if t.Language == "ts" && file.outputFile == "vite.config.js" {
 			continue
 		}

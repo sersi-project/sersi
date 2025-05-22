@@ -63,6 +63,10 @@ func (s *Scaffold) Execute() {
 		gtFramework = "react-ts"
 	}
 
+	if s.Framework == "vanilla" && s.Language == "typescript" {
+		gtFramework = "vanilla-ts"
+	}
+
 	goldenTemplate := NewGoldenArchitecture(s.ProjectName, gtFramework)
 	err = goldenTemplate.Generate()
 	if err != nil {

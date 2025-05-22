@@ -22,7 +22,7 @@ func AddPublicFolder(projectName string) error {
 		return fmt.Errorf("failed to get current working directory: %w", err)
 	}
 
-	projectPath := filepath.Join(cwd, projectName)
+	projectPath := filepath.Join(cwd, projectName, "public")
 
 	err = utils.CopyDirectory(pathToPublic, projectPath)
 	if err != nil {
