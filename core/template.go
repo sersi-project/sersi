@@ -87,14 +87,11 @@ func (t *Template) Generate() error {
 			continue
 		}
 
-		fmt.Println("🔃 Generating file:", file.outputFile)
-
 		err := t.renderTemplate(file.TemplatePath, file.outputFile)
 		if err != nil {
 			return fmt.Errorf("failed to render template: %w", err)
 		}
 	}
-	fmt.Printf("✅ Template Execution completed for %s\n", t.ProjectName)
 	return nil
 }
 

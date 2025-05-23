@@ -29,7 +29,5 @@ func AddPublicFolder(projectName string) error {
 		return fmt.Errorf("failed to copy public folder: %w", err)
 	}
 
-	fmt.Printf("✅ Public folder created at %s\n", projectPath)
-
 	return nil
 }

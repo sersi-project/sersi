@@ -1,25 +1,18 @@
 package utils
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 )
 
 func CreateDirectory(name string) error {
-	cwd, err := os.Getwd()
+	projectPath := GetProjectPath(name)
+	err := os.MkdirAll(projectPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	projectPath := filepath.Join(cwd, name)
-	err = os.MkdirAll(projectPath, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("✅ Project Created at %s\n", projectPath)
 	return nil
 }
 
@@ -69,4 +62,18 @@ func CopyFile(src, dst string, info os.FileInfo) error {
 
 	_, err = io.Copy(out, in)
 	return err
+}
+
+func FileExists(name string) bool {
+	path := GetProjectPath(name)
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func GetProjectPath(name string) string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(cwd, name)
 }

@@ -3,24 +3,20 @@ package create
 import (
 	"fmt"
 	"os"
+	"sersi/common"
 	"sersi/core"
-	"sersi/model"
+	"sersi/tea/menuinput"
+	"sersi/tea/spinner"
+	"sersi/tea/textinput"
+	"sersi/utils"
+	"sersi/validator"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/manifoldco/promptui"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
-var (
-	namePrompt      = "What would you like to name this project"
-	frameworkPrompt = "What framework will you be using"
-	cssPrompt       = "How would you like to style this project"
-	langPrompt      = "What language will you be using"
-	defaultName     = "my-project"
-	frameworkItems  = []string{"React", "Vue", "Vanilla", "Svelte"}
-	cssItems        = []string{"Tailwind", "Bootstrap", "Traditional"}
-	langItems       = []string{"Typescript", "Javascript"}
-)
+var logoStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
 
 var Cmd = &cobra.Command{
 	Use:   "create",
@@ -29,82 +25,125 @@ var Cmd = &cobra.Command{
 	Run:   Run,
 }
 
-var selectTemplate = promptui.SelectTemplates{
-	Active:   "> {{ . | cyan }}",
-	Inactive: "  {{ . | faint }}",
-	Selected: "✔ {{ . | green }}",
-}
-
 func init() {
-	Cmd.Flags().StringP("name", "n", defaultName, "name of project")
-	Cmd.Flags().StringP("framework", "f", "react", "name of framework to use")
-	Cmd.Flags().StringP("css", "s", "css", "styling for template")
-	Cmd.Flags().StringP("lang", "l", "js", "javascript or Typescript")
+	Cmd.Flags().StringP("name", "n", "", "Name of project")
+	Cmd.Flags().StringP("framework", "t", "", "Name of framework for template")
+	Cmd.Flags().StringP("css", "s", "", "Styling for template")
+	Cmd.Flags().StringP("lang", "l", "", "Javascript or Typescript")
 }
 
 func Run(cmd *cobra.Command, args []string) {
-	p := tea.NewProgram(model.InitialModel())
-	finalModel, err := p.Run()
+	var err error
+	var tprogram *tea.Program
+
+	fmt.Printf("%s\n", logoStyle.Render(common.Logo))
+
+	scaffoldBuilder := core.NewScaffoldBuilder()
+
+	projectName, err := cmd.Flags().GetString("name")
+	if err != nil {
+		fmt.Printf("Error getting project name: %s", err)
+		os.Exit(1)
+	}
+
+	if projectName != "" {
+		if utils.FileExists(projectName) {
+			fmt.Printf("Error: %s", "Project already exists")
+			os.Exit(1)
+		}
+
+		if err = validator.ValidateString(projectName); err != nil {
+			fmt.Printf("Error: %s", "Invalid project name")
+			os.Exit(1)
+		}
+		scaffoldBuilder.ProjectName(projectName)
+	} else {
+		tprogram = tea.NewProgram(textinput.InitialModel("What is this project called?", "Enter project name"))
+		pn, err := tprogram.Run()
+		if err != nil {
+			fmt.Printf("Error running program: %s", err)
+			os.Exit(1)
+		}
+
+		projectName = pn.(textinput.Model).Value
+		if projectName == "" {
+			fmt.Printf("\n\nOperation cancelled!\n\n")
+			os.Exit(0)
+		}
+		scaffoldBuilder.ProjectName(projectName)
+	}
+
+	framework, err := cmd.Flags().GetString("framework")
+	if err != nil {
+		fmt.Printf("Error getting framework: %s", err)
+		os.Exit(1)
+	}
+
+	if framework != "" {
+		scaffoldBuilder.Framework(framework)
+	} else {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a framework", []string{"React", "Svelte", "Vanilla", "Vue"}, "Framework"))
+		fm, err := tprogram.Run()
+		if err != nil {
+			fmt.Printf("Error running program: %s", err)
+			os.Exit(1)
+		}
+
+		if fm.(*menuinput.ListModel).Choice == "" {
+			os.Exit(0)
+		}
+		scaffoldBuilder.Framework(fm.(*menuinput.ListModel).Choice)
+	}
+
+	css, err := cmd.Flags().GetString("css")
+	if err != nil {
+		fmt.Printf("Error getting css: %s", err)
+		os.Exit(1)
+	}
+
+	if css != "" {
+		scaffoldBuilder.CSS(css)
+	} else {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a CSS library", []string{"Tailwind", "Bootstrap", "Traditional"}, "CSS"))
+		cm, err := tprogram.Run()
+		if err != nil {
+			fmt.Printf("Error running program: %s", err)
+			os.Exit(1)
+		}
+
+		if cm.(*menuinput.ListModel).Choice == "" {
+			os.Exit(0)
+		}
+		scaffoldBuilder.CSS(cm.(*menuinput.ListModel).Choice)
+	}
+
+	lang, err := cmd.Flags().GetString("lang")
+	if err != nil {
+		fmt.Printf("Error getting lang: %s", err)
+		os.Exit(1)
+	}
+
+	if lang != "" {
+		scaffoldBuilder.Language(lang)
+	} else {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a language", []string{"Javascript", "Typescript"}, "Language"))
+		ln, err := tprogram.Run()
+		if err != nil {
+			fmt.Printf("Error running program: %s", err)
+			os.Exit(1)
+		}
+
+		if ln.(*menuinput.ListModel).Choice == "" {
+			os.Exit(0)
+		}
+		scaffoldBuilder.Language(ln.(*menuinput.ListModel).Choice)
+	}
+
+	projectPath := utils.GetProjectPath(projectName)
+	loading := tea.NewProgram(spinner.InitialSpinnerModel(projectPath, scaffoldBuilder.Build()))
+	_, err = loading.Run()
 	if err != nil {
 		fmt.Printf("Error running program: %s", err)
 		os.Exit(1)
 	}
-
-	m := finalModel.(model.Model)
-	if m.Name == "" {
-		os.Exit(1)
-	}
-	if m.Framework == "" {
-		os.Exit(1)
-	}
-	if m.Css == "" {
-		os.Exit(1)
-	}
-	if m.Lang == "" {
-		os.Exit(1)
-	}
-
-	scaffold := core.NewScaffoldBuilder().
-		ProjectName(m.Name).
-		Framework(m.Framework).
-		CSS(m.Css).
-		Language(m.Lang).Build()
-
-	scaffold.Execute()
 }
-
-// func helperPrompt(cmd *cobra.Command, flagName string, prompt promptui.Prompt) (string, error) {
-// 	var value string
-// 	if cmd.Flags().Changed(flagName) {
-// 		value, _ = cmd.Flags().GetString(flagName)
-// 		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
-
-// 	} else {
-// 		var err error
-// 		value, err = prompt.Run()
-
-// 		if err != nil {
-// 			return "", err
-// 		}
-// 	}
-
-// 	return value, nil
-// }
-
-// func helperSelect(cmd *cobra.Command, flagName string, prompt promptui.Select) (string, error) {
-// 	var value string
-// 	if cmd.Flags().Changed(flagName) {
-// 		value, _ = cmd.Flags().GetString(flagName)
-// 		fmt.Fprintf(cmd.OutOrStderr(), "✔ %s: %s", flagName, value)
-// 	} else {
-// 		var err error
-// 		prompt.Templates = &selectTemplate
-// 		_, value, err = prompt.Run()
-
-// 		if err != nil {
-// 			return "", err
-// 		}
-// 	}
-
-// 	return value, nil
-// }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sersi/utils"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -54,5 +55,33 @@ func (fp *FileParser) ExceuteMapping() (*Config, error) {
 		return nil, fmt.Errorf("Error unmarshalling YAML: %v", err)
 	}
 
+	if config.Scaffold.Frontend.Language == "" {
+		config.Scaffold.Frontend.Language = "javascript"
+	}
+
+	err = validateConfig(&config)
+	if err != nil {
+		return nil, fmt.Errorf("Error in config: %v", err)
+	}
+
 	return &config, nil
+}
+
+func validateConfig(config *Config) error {
+	if utils.FileExists(config.Name) {
+		return fmt.Errorf("project already exists")
+	}
+
+	if config.Name == "" {
+		return fmt.Errorf("parameter: name is required")
+	}
+
+	if config.Scaffold.Frontend.Framework == "" {
+		return fmt.Errorf("parameter: framework is required")
+	}
+
+	if config.Scaffold.Frontend.CSS == "" {
+		return fmt.Errorf("parameter: css is required")
+	}
+	return nil
 }

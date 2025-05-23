@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"sersi/utils"
@@ -35,6 +34,5 @@ func (g *GoldenTemplate) Generate() error {
 		return err
 	}
 
-	fmt.Printf("✅ Base Framework Injected at %s\n", dst)
 	return nil
 }
