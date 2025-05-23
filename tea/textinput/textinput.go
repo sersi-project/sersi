@@ -94,11 +94,11 @@ func validateString(s string) error {
 		return err
 	}
 	if !matched {
-		return fmt.Errorf("Invalid project name: %s", s)
+		return fmt.Errorf("invalid project name: %s", s)
 	}
 
 	if utils.FileExists(s) {
-		return fmt.Errorf("Project already exists: %s", s)
+		return fmt.Errorf("project already exists: %s", s)
 	}
 	return nil
 }

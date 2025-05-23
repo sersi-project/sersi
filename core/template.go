@@ -110,7 +110,11 @@ func (t *Template) renderTemplate(templateFile, outputFile string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer func() {
+		if cerr := output.Close(); cerr != nil {
+			err = cerr
+		}
+	}()
 
 	err = tmpl.Execute(output, t)
 	if err != nil {
