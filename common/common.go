@@ -1,5 +1,11 @@
 package common
 
+import (
+	"fmt"
+
+	"github.com/charmbracelet/lipgloss"
+)
+
 var Logo = `
  ____  _____ ____  ____ ___ 
 / ___|| ____|  _ \/ ___|_ _|
@@ -9,5 +15,12 @@ var Logo = `
 
 SERSI - Skip the boilerplate.`
 
-var Link = "https://sersi.dev"
-var Version = "1.0.0"
+var link = "https://sersi.dev"
+var version = "1.0.0"
+var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
+var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+
+func PrintLogo() {
+  fmt.Printf("%s\n", logoStyle.Render(Logo))
+	fmt.Printf("%s\n", fmt.Sprintf("v%s    %s\n\n", version, infoStyle.Render(link)))
+}

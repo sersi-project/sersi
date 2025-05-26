@@ -28,9 +28,7 @@ func init() {
 }
 
 func Run(cmd *cobra.Command, args []string) {
-	fmt.Printf("%s\n", logoStyle.Render(common.Logo))
-	fmt.Printf("%s\n", fmt.Sprintf("v%s    %s\n\n", common.Version, infoStyle.Render(common.Link)))
-
+	common.PrintLogo()
 	filePath, _ := cmd.Flags().GetString("file")
 	fmt.Printf("> %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
 

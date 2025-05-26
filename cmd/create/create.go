@@ -16,8 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
-var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+
 var cancelStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#EE4B2B")).Bold(true)
 
 var Cmd = &cobra.Command{
@@ -38,8 +37,7 @@ func Run(cmd *cobra.Command, args []string) {
 	var err error
 	var tprogram *tea.Program
 
-	fmt.Printf("%s\n", logoStyle.Render(common.Logo))
-	fmt.Printf("%s\n", fmt.Sprintf("v%s    %s\n\n", common.Version, infoStyle.Render(common.Link)))
+	common.PrintLogo()
 
 	scaffoldBuilder := core.NewScaffoldBuilder()
 

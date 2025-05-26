@@ -7,7 +7,7 @@ import (
 	"os"
 	"sersi/cmd/build"
 	"sersi/cmd/create"
-	initconifg "sersi/cmd/init"
+	"sersi/cmd/version"
 
 	"github.com/spf13/cobra"
 )
@@ -35,7 +35,7 @@ func Execute() {
 }
 
 func addSubcommand() {
-	rootCmd.AddCommand(initconifg.Cmd)
+	rootCmd.AddCommand(version.Cmd)
 	rootCmd.AddCommand(create.Cmd)
 	rootCmd.AddCommand(build.Cmd)
 }
