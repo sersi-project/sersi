@@ -80,15 +80,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	if m.Value != "" {
-		return fmt.Sprintf("> Project name:    %s\n", m.Value)
+		return fmt.Sprintf("> %-15s: %s\n", m.styles.SelectionTitle.Render("Project Name"), m.styles.Selection.Render(m.Value))
 	}
 	if m.err != nil {
-		return fmt.Sprintf("\n\n%s\n", m.styles.Error.Render(m.err.Error()))
+		return fmt.Sprintf("\n%s\n", m.styles.Error.Render(m.err.Error()))
 	}
-	return fmt.Sprintf("%s\n%s\n\n%s", m.header, m.styles.InputField.Render(m.textInput.View()), "(esc to quit)") + "\n\n"
+	return fmt.Sprintf("%s\n%s\n\n%s", m.styles.Header.Render(m.header), m.textInput.View(), "(esc to quit)" + "\n")
 }
 
 func validateString(s string) error {
+	if len(s) < 3 {
+		return fmt.Errorf("name is too short: %s", s)
+	}
 	matched, err := regexp.MatchString("^[a-zA-Z0-9_-]+$", s)
 	if err != nil {
 		return err

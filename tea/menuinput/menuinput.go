@@ -3,6 +3,7 @@ package menuinput
 import (
 	"fmt"
 	"io"
+	"sersi/tea/styles"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -20,10 +21,9 @@ type errMsg error
 var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#cd24cd"))
 	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
 	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
-	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
 )
 
 type item string
@@ -41,12 +41,16 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%d. %s", index+1, i)
+	str := fmt.Sprintf("%s", i)
 
 	fn := itemStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+			return selectedItemStyle.Render("[✓]  " + strings.Join(s, " "))
+		}
+	} else {
+		fn = func(s ...string) string {
+			return itemStyle.Render("[ ]  " + strings.Join(s, " "))
 		}
 	}
 
@@ -62,6 +66,7 @@ type ListModel struct {
 	header   string
 	quitting bool
 	err      error
+	styles   *styles.Styles
 }
 
 func (m *ListModel) Init() tea.Cmd {
@@ -80,7 +85,8 @@ func InitialMenuInput(header string, itemsString []string, listType string) *Lis
 	}
 
 	l := list.New(listItems, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = header
+	styles := styles.DefaultStyles()
+	l.Title = styles.Header.Render(header)
 	l.SetShowPagination(false)
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
@@ -91,8 +97,9 @@ func InitialMenuInput(header string, itemsString []string, listType string) *Lis
 		list:     l,
 		listType: listType,
 		Choice:   "",
-		header:   titleStyle.Render(header),
+		header:   header,
 		quitting: false,
+		styles:   styles,
 	}
 }
 
@@ -127,10 +134,10 @@ func (m *ListModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *ListModel) View() string {
 	if m.Choice != "" {
-		return fmt.Sprintf("> %s:    %s\n", m.listType, m.Choice)
+		return fmt.Sprintf("> %-15s: %s\n", m.styles.SelectionTitle.Render(m.listType), m.styles.Selection.Render(m.Choice))
 	}
 	if m.quitting {
-		return quitTextStyle.Render("Operation cancelled!")
+		return fmt.Sprintf("\n%s\n", m.styles.Cancel.Render("Operation cancelled!"))
 	}
 	return "\n" + m.list.View()
 }

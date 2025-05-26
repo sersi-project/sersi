@@ -16,7 +16,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logoStyle = lipgloss.NewStyle().Padding(1, 0, 0, 2)
+var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
+var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+var cancelStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#EE4B2B")).Bold(true)
 
 var Cmd = &cobra.Command{
 	Use:   "create",
@@ -37,6 +39,7 @@ func Run(cmd *cobra.Command, args []string) {
 	var tprogram *tea.Program
 
 	fmt.Printf("%s\n", logoStyle.Render(common.Logo))
+	fmt.Printf("%s\n", fmt.Sprintf("v%s    %s\n\n", common.Version, infoStyle.Render(common.Link)))
 
 	scaffoldBuilder := core.NewScaffoldBuilder()
 
@@ -67,7 +70,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 		projectName = pn.(textinput.Model).Value
 		if projectName == "" {
-			fmt.Printf("\n\nOperation cancelled!\n\n")
+			fmt.Printf("\n%s\n", cancelStyle.Render("Operation cancelled!"))
 			os.Exit(0)
 		}
 		scaffoldBuilder.ProjectName(projectName)
@@ -82,7 +85,7 @@ func Run(cmd *cobra.Command, args []string) {
 	if framework != "" {
 		scaffoldBuilder.Framework(framework)
 	} else {
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a framework", []string{"React", "Svelte", "Vanilla", "Vue"}, "Framework"))
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Framework", []string{"React", "Svelte", "Vanilla", "Vue"}, "Framework"))
 		fm, err := tprogram.Run()
 		if err != nil {
 			fmt.Printf("Error running program: %s", err)
@@ -104,7 +107,7 @@ func Run(cmd *cobra.Command, args []string) {
 	if css != "" {
 		scaffoldBuilder.CSS(css)
 	} else {
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a CSS library", []string{"Tailwind", "Bootstrap", "Traditional"}, "CSS"))
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("CSS library", []string{"Tailwind", "Bootstrap", "Traditional"}, "CSS"))
 		cm, err := tprogram.Run()
 		if err != nil {
 			fmt.Printf("Error running program: %s", err)
@@ -126,7 +129,7 @@ func Run(cmd *cobra.Command, args []string) {
 	if lang != "" {
 		scaffoldBuilder.Language(lang)
 	} else {
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Select a language", []string{"Javascript", "Typescript"}, "Language"))
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Language", []string{"Javascript", "Typescript"}, "Language"))
 		ln, err := tprogram.Run()
 		if err != nil {
 			fmt.Printf("Error running program: %s", err)

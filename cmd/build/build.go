@@ -9,8 +9,12 @@ import (
 	"sersi/utils"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
+var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
+var buildStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#CD24CD")).Italic(true)
+var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
 
 var Cmd = &cobra.Command{
 	Use:   "build",
@@ -24,9 +28,11 @@ func init() {
 }
 
 func Run(cmd *cobra.Command, args []string) {
-	fmt.Println(common.Logo)
+	fmt.Printf("%s\n", logoStyle.Render(common.Logo))
+	fmt.Printf("%s\n", fmt.Sprintf("v%s    %s\n\n", common.Version, infoStyle.Render(common.Link)))
+
 	filePath, _ := cmd.Flags().GetString("file")
-	fmt.Printf("Creating a new project using %s:\n", filePath)
+	fmt.Printf("> %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
 
 	fileParser := core.NewFileParser(filePath)
 
