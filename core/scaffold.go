@@ -1,8 +1,9 @@
 package core
 
 import (
-	"sersi/utils"
 	"strings"
+
+	"github.com/sersi-project/core/utils"
 )
 
 type Scaffold struct {
@@ -45,16 +46,16 @@ func (sb *ScaffoldBuilder) Build() *Scaffold {
 	return sb.config
 }
 
-func (s *Scaffold) Execute() {
+func (s *Scaffold) Execute() error {
 	// Create a directory
 	err := utils.CreateDirectory(s.ProjectName)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = AddPublicFolder(s.ProjectName)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	gtFramework := s.Framework
@@ -70,7 +71,7 @@ func (s *Scaffold) Execute() {
 	goldenTemplate := NewGoldenArchitecture(s.ProjectName, gtFramework)
 	err = goldenTemplate.Generate()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	templateBuilder := NewTemplateBuilder().
@@ -87,6 +88,8 @@ func (s *Scaffold) Execute() {
 
 	err = template.Generate()
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }

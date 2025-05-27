@@ -2,10 +2,19 @@ package build
 
 import (
 	"fmt"
-	"sersi/core"
+	"os"
 
+	"github.com/sersi-project/core/common"
+	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/tea/spinner"
+	"github.com/sersi-project/core/utils"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
+
+var buildStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#CD24CD")).Italic(true)
 
 var Cmd = &cobra.Command{
 	Use:   "build",
@@ -18,16 +27,17 @@ func init() {
 	Cmd.Flags().StringP("file", "f", "", "File Path")
 }
 
-func Run(cmd *cobra.Command, args []string) { // Execute the command logic here
-	fmt.Printf("Creating a new project with the following options:\n")
+func Run(cmd *cobra.Command, args []string) {
+	common.PrintLogo()
 	filePath, _ := cmd.Flags().GetString("file")
+	fmt.Printf("> %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
 
 	fileParser := core.NewFileParser(filePath)
 
 	fileParserResult, err := fileParser.ExceuteMapping()
 	if err != nil {
 		fmt.Println("Error parsing file:", err)
-		return
+		os.Exit(1)
 	}
 
 	scaffold := core.NewScaffoldBuilder().
@@ -37,5 +47,10 @@ func Run(cmd *cobra.Command, args []string) { // Execute the command logic here
 		Language(fileParserResult.Scaffold.Frontend.Language).
 		Build()
 
-	scaffold.Execute()
+	loading := tea.NewProgram(spinner.InitialSpinnerModel(utils.GetProjectPath(fileParserResult.Name), scaffold))
+	_, err = loading.Run()
+	if err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 }

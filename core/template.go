@@ -18,12 +18,12 @@ var filesToBeCreated = []TemplateMap{
 	{"templates/base/package.json.tmpl", "package.json", false},
 	{"templates/base/README.md.tmpl", "README.md", false},
 	{"templates/base/styles.css.tmpl", "src/styles.css", false},
-	{"templates/base/main.js.tmpl", "src/main.js", false},
+	{"templates/base/main.tmpl", "src/main.js", false},
 	{"templates/base/.gitignore.tmpl", ".gitignore", false},
-	{"templates/base/vite.config.js.tmpl", "vite.config.js", false},
-	{"templates/base/ts/main.ts.tmpl", "src/main.ts", true},
-	{"templates/base/ts/vite.config.ts.tmpl", "vite.config.ts", true},
-	// {"templates/base/ts/tsconfig.json.tmpl", "tsconfig.json", true},
+	{"templates/base/vite.config.tmpl", "vite.config.js", false},
+	{"templates/base/main.tmpl", "src/main.ts", true},
+	{"templates/base/vite.config.tmpl", "vite.config.ts", true},
+	{"templates/base/ts/tsconfig.json.tmpl", "tsconfig.json", true},
 	{"templates/base/ts/tsconfig.node.tmpl", "tsconfig.node.json", true},
 	{"templates/base/ts/tsconfig.app.json.tmpl", "tsconfig.app.json", true},
 }
@@ -87,14 +87,37 @@ func (t *Template) Generate() error {
 			continue
 		}
 
-		fmt.Println("🔃 Generating file:", file.outputFile)
-
 		err := t.renderTemplate(file.TemplatePath, file.outputFile)
 		if err != nil {
 			return fmt.Errorf("failed to render template: %w", err)
 		}
 	}
-	fmt.Printf("✅ Template Execution completed for %s\n", t.ProjectName)
+
+    switch t.Framework {
+    case "react":
+        if t.Language == "ts" { 
+            err := t.renderTemplate("templates/base/App.tmpl", "src/App.tsx")
+            if err != nil {
+                return fmt.Errorf("failed to render template: %w", err)
+            }
+        } else {
+            err := t.renderTemplate("templates/base/App.tmpl", "src/App.jsx")
+            if err != nil {
+                return fmt.Errorf("failed to render template: %w", err)
+            }
+        }
+    case "vue":
+        err := t.renderTemplate("templates/base/App.tmpl", "src/App.vue")
+        if err != nil {
+            return fmt.Errorf("failed to render template: %w", err)
+        }
+    case "svelte":
+        err := t.renderTemplate("templates/base/App.tmpl", "src/App.svelte")
+        if err != nil {
+            return fmt.Errorf("failed to render template: %w", err)
+        }
+    }
+
 	return nil
 }
 
@@ -113,7 +136,11 @@ func (t *Template) renderTemplate(templateFile, outputFile string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer func() {
+		if cerr := output.Close(); cerr != nil {
+			err = cerr
+		}
+	}()
 
 	err = tmpl.Execute(output, t)
 	if err != nil {

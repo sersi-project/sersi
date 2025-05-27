@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sersi/utils"
+
+	"github.com/sersi-project/core/utils"
 )
 
 const pathToPublic = "templates/base/public"
@@ -28,8 +29,6 @@ func AddPublicFolder(projectName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to copy public folder: %w", err)
 	}
-
-	fmt.Printf("✅ Public folder created at %s\n", projectPath)
 
 	return nil
 }
