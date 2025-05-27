@@ -1,5 +1,4 @@
 version: 1
-
 project_name: sersi
 
 before:
@@ -12,8 +11,11 @@ builds:
       goarch: [amd64, arm64]
 
 archives:
-    - formats: ["tar.gz", "zip"]
+    - format: tar.gz
       name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+      format_overrides:
+          - goos: windows
+            format: zip
 
 release:
     footer: "Copyright 2025 Sersi"
