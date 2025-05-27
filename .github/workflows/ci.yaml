@@ -1,23 +1,48 @@
-name: Sersi CI
+name: CI
 
 on:
-  push:
-    tags:
-      - "v*"
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.23"
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: "1.22"
+
+            - name: Cache Go modules
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cache/go-build
+                      ~/go/pkg/mod
+                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+                  restore-keys: |
+                      ${{ runner.os }}-go-
+
+            - name: Install golangci-lint
+              uses: golangci/golangci-lint-action@v3
+              with:
+                  version: latest
+
+            - name: Run lint
+              run: golangci-lint run ./...
+
+            - name: Build CLI
+              run: |
+                  mkdir -p build
+                  go build -o build/sersi .
+
+            - name: Clean up
+              run: |
+                  rm -rf tmp/ || true
+                  echo "Cleanup done."

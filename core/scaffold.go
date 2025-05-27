@@ -1,8 +1,9 @@
 package core
 
 import (
-	"sersi/utils"
 	"strings"
+
+	"github.com/sersi-project/core/utils"
 )
 
 type Scaffold struct {

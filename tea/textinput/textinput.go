@@ -3,8 +3,9 @@ package textinput
 import (
 	"fmt"
 	"regexp"
-	"sersi/tea/styles"
-	"sersi/utils"
+
+	"github.com/sersi-project/core/tea/styles"
+	"github.com/sersi-project/core/utils"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"

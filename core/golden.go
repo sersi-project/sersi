@@ -3,7 +3,8 @@ package core
 import (
 	"os"
 	"path/filepath"
-	"sersi/utils"
+
+	"github.com/sersi-project/core/utils"
 )
 
 const baseGoldenTemplatePath = "templates/golden"

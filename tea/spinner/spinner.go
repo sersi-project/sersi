@@ -5,8 +5,9 @@ package spinner
 
 import (
 	"fmt"
-	"sersi/core"
-	"sersi/tea/styles"
+
+	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/tea/styles"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"

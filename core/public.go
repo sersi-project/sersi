@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sersi/utils"
+
+	"github.com/sersi-project/core/utils"
 )
 
 const pathToPublic = "templates/base/public"

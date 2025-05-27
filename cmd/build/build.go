@@ -3,18 +3,18 @@ package build
 import (
 	"fmt"
 	"os"
-	"sersi/common"
-	"sersi/core"
-	"sersi/tea/spinner"
-	"sersi/utils"
+
+	"github.com/sersi-project/core/common"
+	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/tea/spinner"
+	"github.com/sersi-project/core/utils"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
-var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
+
 var buildStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#CD24CD")).Italic(true)
-var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
 
 var Cmd = &cobra.Command{
 	Use:   "build",

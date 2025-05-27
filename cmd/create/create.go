@@ -3,13 +3,14 @@ package create
 import (
 	"fmt"
 	"os"
-	"sersi/common"
-	"sersi/core"
-	"sersi/tea/menuinput"
-	"sersi/tea/spinner"
-	"sersi/tea/textinput"
-	"sersi/utils"
-	"sersi/validator"
+
+	"github.com/sersi-project/core/common"
+	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/tea/menuinput"
+	"github.com/sersi-project/core/tea/spinner"
+	"github.com/sersi-project/core/tea/textinput"
+	"github.com/sersi-project/core/utils"
+	"github.com/sersi-project/core/validator"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"

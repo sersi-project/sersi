@@ -12,17 +12,24 @@
   "dependencies": {
     {{- if eq .CSS "tailwind" }}
     "@tailwindcss/vite": "^4.1.7",
+    {{- if eq .Framework "svelte" }}
+    "tailwindcss": "^4.1.7"
+    {{- else }}
     "tailwindcss": "^4.1.7",
     {{- end }}
+    {{- end }}
     {{- if eq .CSS "bootstrap" }}
+    {{- if eq .Framework "react" }}
     "bootstrap": "^5.3.0",
+    "react-bootstrap": "^2.10.10",
+    {{- else if eq .Framework "vue" }}
+    "bootstrap": "^4.6.0",
+    "bootstrap-vue": "^2.23.0",
+    {{- end }}
     {{- end }}
     {{- if eq .Framework "vue" }}
     "vue": "^3.3.4",
     "vue-router": "^4.2.0"
-    {{- else if eq .Framework "svelte" }}
-    "svelte": "^3.58.0",
-    "svelte-routing": "^1.6.0"
     {{- else if eq .Framework "react" }}
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -30,7 +37,7 @@
     {{- end }}
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+
     {{- if eq .Framework "vue" }}
     "@vitejs/plugin-vue": "^4.4.1",
     {{- if eq .Language "ts" }}
@@ -39,25 +46,28 @@
     {{- end }}
     {{- else if eq .Framework "svelte" }}
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "@tsconfig/svelte": "^4.0.0",
+    "svelte": "^5.33.2",
     {{- if eq .Language "ts" }}
     "@tsconfig/svelte": "^5.0.4",
     "svelte-check": "^4.1.7",
     {{- end }}
     {{- else if eq .Framework "react" }}
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "globals": "^16.0.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react-refresh": "^1.3.0",
     "@vitejs/plugin-react": "^4.4.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
-    {{- end }}
     {{- if eq .Language "ts" }}
     "typescript-eslint": "^8.32.1",
+    {{- end}}
+    {{- end }}
+    {{- if eq .Language "ts" }}
     "typescript": "^5.8.3",
     {{- end }}
-    "eslint": "^9.26.0",
-    "globals": "^16.0.0",
     "vite": "^6.3.5"
   }
 }

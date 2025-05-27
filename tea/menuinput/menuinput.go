@@ -3,8 +3,10 @@ package menuinput
 import (
 	"fmt"
 	"io"
-	"sersi/tea/styles"
+
 	"strings"
+
+	"github.com/sersi-project/core/tea/styles"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -41,8 +43,10 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
+	//nolint:errcheck,gocritic
 	str := fmt.Sprintf("%s", i)
 
+	//nolint:errcheck,gocritic
 	fn := itemStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {

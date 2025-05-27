@@ -12,6 +12,7 @@ linters:
     - gosimple
     - structcheck
     - deadcode
+    - gocritic
 
 issues:
   exclude-rules:

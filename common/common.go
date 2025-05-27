@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var Logo = `
+const Logo = `
  ____  _____ ____  ____ ___ 
 / ___|| ____|  _ \/ ___|_ _|
 \___ \|  _| | |_) \___ \| | 
@@ -15,10 +15,12 @@ var Logo = `
 
 SERSI - Skip the boilerplate.`
 
-var link = "https://sersi.dev"
-var version = "1.0.0"
-var logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
-var infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+var(
+	link = "https://sersi.dev"
+	version = "1.0.0"
+	logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
+	infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+)
 
 func PrintLogo() {
   fmt.Printf("%s\n", logoStyle.Render(Logo))

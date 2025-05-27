@@ -5,9 +5,10 @@ package cmd
 
 import (
 	"os"
-	"sersi/cmd/build"
-	"sersi/cmd/create"
-	"sersi/cmd/version"
+
+	"github.com/sersi-project/core/cmd/build"
+	"github.com/sersi-project/core/cmd/create"
+	"github.com/sersi-project/core/cmd/version"
 
 	"github.com/spf13/cobra"
 )

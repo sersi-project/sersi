@@ -1,7 +1,7 @@
 package version
 
 import (
-	"sersi/common"
+	"github.com/sersi-project/core/common"
 
 	"github.com/spf13/cobra"
 )
