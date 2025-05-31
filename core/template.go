@@ -17,12 +17,10 @@ type TemplateMap struct {
 var templatesFolder embed.FS
 
 var jsFiles = []TemplateMap{
-	{"templates/base/main.tmpl", "src/main.js"},
     {"templates/base/vite.config.tmpl", "vite.config.js"},
 }
 
 var tsFiles = []TemplateMap{
-    {"templates/base/main.tmpl", "src/main.ts"},
 	{"templates/base/vite.config.tmpl", "vite.config.ts"},
 	{"templates/base/ts/tsconfig.json.tmpl", "tsconfig.json"},
 	{"templates/base/ts/tsconfig.node.tmpl", "tsconfig.node.json"},
@@ -97,6 +95,11 @@ func (t *Template) Generate() error {
         }
     }
 
+    err = t.renderMainFile()
+    if err != nil {
+        return fmt.Errorf("failed to render main file: %w", err)
+    }
+
     err = t.renderAppFile()
     if err != nil {
         return fmt.Errorf("failed to render app file: %w", err)
@@ -106,10 +109,11 @@ func (t *Template) Generate() error {
 }
 
 func (t *Template) renderAppFile() error {
-switch t.Framework {
+    var err error
+    switch t.Framework {
     case "react":
         if t.Language == "ts" { 
-            err := t.renderTemplate("templates/base/App.tmpl", "src/App.tsx")
+            err = t.renderTemplate("templates/base/App.tmpl", "src/App.tsx")
             if err != nil {
                 return err
             }
@@ -120,7 +124,7 @@ switch t.Framework {
             }
         }
     case "vue":
-        err := t.renderTemplate("templates/base/App.tmpl", "src/App.vue")
+        err = t.renderTemplate("templates/base/App.tmpl", "src/App.vue")
         if err != nil {
             return err
         }
@@ -133,6 +137,7 @@ switch t.Framework {
 
     return nil
 }
+
 func (t *Template) renderFiles(files []TemplateMap) error {
 	for _, file := range files {
 		err := t.renderTemplate(file.TemplatePath, file.outputFile)
@@ -141,6 +146,35 @@ func (t *Template) renderFiles(files []TemplateMap) error {
 		}
 	}
 	return nil
+}
+
+func (t *Template) renderMainFile() error {
+    if t.Framework == "react" {
+        if t.Language == "ts" {
+            err := t.renderTemplate("templates/base/main.tmpl", "src/main.tsx")
+            if err != nil {
+                return err
+            }
+        } else {
+            err := t.renderTemplate("templates/base/main.tmpl", "src/main.jsx")
+            if err != nil {
+                return err
+            }
+        }
+    } else {
+        if t.Language == "ts" {
+            err := t.renderTemplate("templates/base/main.tmpl", "src/main.ts")
+            if err != nil {
+                return err
+            }
+        } else {
+            err := t.renderTemplate("templates/base/main.tmpl", "src/main.js")
+            if err != nil {
+                return err
+            }
+        }
+    }
+    return nil
 }
 
 func (t *Template) renderTemplate(templateFile, outputFile string) error {
