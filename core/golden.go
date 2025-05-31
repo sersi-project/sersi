@@ -1,13 +1,34 @@
 package core
 
 import (
+	"embed"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/sersi-project/core/utils"
 )
 
-const baseGoldenTemplatePath = "templates/golden"
+//go:embed templates/golden/react
+var baseReactPath embed.FS
+
+//go:embed templates/golden/vue
+var baseVuePath embed.FS
+
+//go:embed templates/golden/svelte
+var baseSveltePath embed.FS
+
+//go:embed templates/golden/react-ts
+var baseReactTsPath embed.FS
+
+//go:embed templates/golden/vanilla
+var baseVanillaPath embed.FS
+
+//go:embed templates/golden/vanilla-ts
+var baseVanillaTsPath embed.FS
+
+
+
 
 type GoldenTemplate struct {
 	ProjectName string
@@ -27,10 +48,28 @@ func (g *GoldenTemplate) Generate() error {
 		return err
 	}
 
-	projectPath := filepath.Join(baseGoldenTemplatePath, g.Framework)
+	var projectPath embed.FS
+
+	switch g.Framework {
+	case "react":
+		projectPath = baseReactPath
+	case "vue":
+		projectPath = baseVuePath
+	case "svelte":
+		projectPath = baseSveltePath
+	case "react-ts":
+		projectPath = baseReactTsPath
+	case "vanilla":
+		projectPath = baseVanillaPath
+	case "vanilla-ts":
+		projectPath = baseVanillaTsPath
+	default:
+		return fmt.Errorf("invalid framework: %s", g.Framework)
+	}
+
 	dst := filepath.Join(cwd, g.ProjectName)
 
-	err = utils.CopyDirectory(projectPath, dst)
+	err = utils.CopyDirectory(projectPath, "templates/golden/" + g.Framework, dst)
 	if err != nil {
 		return err
 	}

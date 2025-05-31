@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"embed"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -16,28 +18,31 @@ func CreateDirectory(name string) error {
 	return nil
 }
 
-func CopyDirectory(src, dst string) error {
-	srcPath := filepath.Join(src)
+func CopyDirectory(src embed.FS,folder string, dst string) error {
 	dstPath := filepath.Join(dst)
 
-	err := os.MkdirAll(dstPath, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	err = filepath.Walk(srcPath, func(path string, info os.FileInfo, err error) error {
+	err := fs.WalkDir(src, folder, func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		relPath, _ := filepath.Rel(srcPath, path)
+		relPath, err := filepath.Rel(folder, path)
+		if err != nil {
+			return err
+		}
+
 		dstFilePath := filepath.Join(dstPath, relPath)
 
 		if info.IsDir() {
 			return os.MkdirAll(dstFilePath, os.ModePerm)
 		}
 
-		return CopyFile(path, dstFilePath, info)
+		content, err := src.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		return os.WriteFile(dstFilePath, content, os.ModePerm)
 	})
 
 	if err != nil {

@@ -39,4 +39,20 @@ document.querySelector('#app').innerHTML = `
 `
 
 setupCounter(document.querySelector('#counter'))
+{{- else if eq .Framework "react" }}
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './styles.css'
+{{- if eq .Language "ts" }}
+import App from './App.tsx'
+{{- else if eq .Language "js" }}
+import App from './App.jsx'
+{{- end }}
+
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
 {{- end }}
