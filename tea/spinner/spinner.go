@@ -76,7 +76,7 @@ func (m SpinnerModel) View() string {
 	}
 	str := fmt.Sprintf("%s Generating project at %s...\n", m.spinner.View(), m.projectPath)
 	if m.quitting {
-		return "\n✔  Project created at " + m.styles.Result.Render(m.projectPath) + "\n"
+		return "\n✔ Project created at " + m.styles.Result.Render(m.projectPath) + "\n"
 	}
 	return str
 }
