@@ -72,7 +72,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SpinnerModel) View() string {
 	if m.err != nil {
-		return m.err.Error()
+        return fmt.Sprintf("Error: %s\n\n(press ctrl+c to exit)\n\nreport this bug at sersi.dev\n", m.err.Error())	
 	}
 	str := fmt.Sprintf("%s Generating project at %s...\n", m.spinner.View(), m.projectPath)
 	if m.quitting {
@@ -82,6 +82,11 @@ func (m SpinnerModel) View() string {
 }
 
 func runScaffold(scaffold *core.Scaffold) tea.Cmd {
+    if err := scaffold.Execute(); err != nil {
+        return func() tea.Msg {
+            return CompletedMsg{Err: err}
+        }
+    }
 	return func() tea.Msg {
 		return CompletedMsg{Err: scaffold.Execute()}
 	}

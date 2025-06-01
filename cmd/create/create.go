@@ -87,7 +87,7 @@ func Run(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput("Framework", []string{"React", "Svelte", "Vanilla", "Vue"}, "Framework"))
 		fm, err := tprogram.Run()
 		if err != nil {
-			fmt.Printf("Error running program: %s", err)
+			fmt.Printf(common.ErrorStyle.Render("Error running program: %s"), err)
 			os.Exit(1)
 		}
 
@@ -99,7 +99,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 	css, err := cmd.Flags().GetString("css")
 	if err != nil {
-		fmt.Printf("Error getting css: %s", err)
+		fmt.Printf(common.ErrorStyle.Render("Error getting css: %s"), err)
 		os.Exit(1)
 	}
 
@@ -109,7 +109,7 @@ func Run(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput("CSS library", []string{"Tailwind", "Bootstrap", "Traditional"}, "CSS"))
 		cm, err := tprogram.Run()
 		if err != nil {
-			fmt.Printf("Error running program: %s", err)
+			fmt.Printf(common.ErrorStyle.Render("Error running program: %s"), err)
 			os.Exit(1)
 		}
 
@@ -121,7 +121,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 	lang, err := cmd.Flags().GetString("lang")
 	if err != nil {
-		fmt.Printf("Error getting lang: %s", err)
+		fmt.Printf(common.ErrorStyle.Render("Error getting lang: %s"), err)
 		os.Exit(1)
 	}
 
@@ -145,7 +145,7 @@ func Run(cmd *cobra.Command, args []string) {
 	loading := tea.NewProgram(spinner.InitialSpinnerModel(projectPath, scaffoldBuilder.Build()))
 	_, err = loading.Run()
 	if err != nil {
-		fmt.Printf("Error running program: %s", err)
+		fmt.Printf(common.ErrorStyle.Render("Error running program: %s"), err)
 		os.Exit(1)
 	}
 }

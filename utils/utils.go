@@ -52,6 +52,16 @@ func CopyDirectory(src embed.FS,folder string, dst string) error {
 	return nil
 }
 
+func CleanupDirs(name string) error {
+	projectPath := GetProjectPath(name)
+	err := os.RemoveAll(projectPath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CopyFile(src, dst string, info os.FileInfo) error {
 	in, err := os.Open(src)
 	if err != nil {

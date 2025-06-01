@@ -20,6 +20,7 @@ var(
 	version = "1.0.0"
 	logoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#36E6E6"))
 	infoStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#808080"))
+	ErrorStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FF0000"))
 )
 
 func PrintLogo() {

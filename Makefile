@@ -24,20 +24,20 @@ deps:
 	go mod tidy
 
 build-linux:
-	GOOS=linux GOARCH=amd64 go build -o dist/linux/$(BINARY_NAME) .
+	GOOS=linux GOARCH=amd64 go build -o bin/linux/$(BINARY_NAME) .
 
 build-windows:
-	GOOS=windows GOARCH=amd64 go build -o dist/windows/$(BINARY_NAME).exe .
+	GOOS=windows GOARCH=amd64 go build -o bin/windows/$(BINARY_NAME).exe .
 
 build-mac:
-	GOOS=darwin GOARCH=amd64 go build -o dist/mac/$(BINARY_NAME) .
-	GOOS=darwin GOARCH=arm64 go build -o dist/mac-arm64/$(BINARY_NAME) .
+	GOOS=darwin GOARCH=amd64 go build -o bin/mac/$(BINARY_NAME) .
+	GOOS=darwin GOARCH=arm64 go build -o bin/mac-arm64/$(BINARY_NAME) .
 
 build-all:
-	GOOS=linux GOARCH=amd64 go build -o dist/linux/$(BINARY_NAME) .
-	GOOS=windows GOARCH=amd64 go build -o dist/windows/$(BINARY_NAME).exe .
-	GOOS=darwin GOARCH=amd64 go build -o dist/mac/$(BINARY_NAME) .
-	GOOS=darwin GOARCH=arm64 go build -o dist/mac-arm64/$(BINARY_NAME) .
+	GOOS=linux GOARCH=amd64 go build -o bin/linux/$(BINARY_NAME) .
+	GOOS=windows GOARCH=amd64 go build -o bin/windows/$(BINARY_NAME).exe .
+	GOOS=darwin GOARCH=amd64 go build -o bin/mac/$(BINARY_NAME) .
+	GOOS=darwin GOARCH=arm64 go build -o bin/mac-arm64/$(BINARY_NAME) .
 
 help:
 	@echo "Makefile commands:"

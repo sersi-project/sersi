@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/sersi-project/core/utils"
@@ -47,15 +48,14 @@ func (sb *ScaffoldBuilder) Build() *Scaffold {
 }
 
 func (s *Scaffold) Execute() error {
-	// Create a directory
 	err := utils.CreateDirectory(s.ProjectName)
 	if err != nil {
-		return err
+		return s.ProcessError(err)
 	}
 
 	err = AddPublicFolder(s.ProjectName)
 	if err != nil {
-		return err
+		return s.ProcessError(err)
 	}
 
 	gtFramework := s.Framework
@@ -71,7 +71,7 @@ func (s *Scaffold) Execute() error {
 	goldenTemplate := NewGoldenArchitecture(s.ProjectName, gtFramework)
 	err = goldenTemplate.Generate()
 	if err != nil {
-		return err
+		return s.ProcessError(err)
 	}
 
 	templateBuilder := NewTemplateBuilder().
@@ -88,8 +88,17 @@ func (s *Scaffold) Execute() error {
 
 	err = template.Generate()
 	if err != nil {
-		return err
+		return s.ProcessError(err)
 	}
 
 	return nil
 }
+
+func (s *Scaffold) ProcessError(err error) error {
+    cleanupErr := utils.CleanupDirs(s.ProjectName)
+	if cleanupErr != nil {
+		return fmt.Errorf("failed to cleanup project: %s", cleanupErr.Error())
+	}
+	return fmt.Errorf("failed to generate project: %s", err.Error())
+}
+
