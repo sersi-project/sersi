@@ -1,6 +1,7 @@
 package core
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -8,7 +9,8 @@ import (
 	"github.com/sersi-project/core/utils"
 )
 
-const pathToPublic = "templates/base/public"
+//go:embed templates/base/public/**
+var publicFolder embed.FS
 
 func AddPublicFolder(projectName string) error {
 	dst := filepath.Join(projectName, "public")
@@ -25,7 +27,7 @@ func AddPublicFolder(projectName string) error {
 
 	projectPath := filepath.Join(cwd, projectName, "public")
 
-	err = utils.CopyDirectory(pathToPublic, projectPath)
+	err = utils.CopyDirectory(publicFolder, "templates/base/public", projectPath)
 	if err != nil {
 		return fmt.Errorf("failed to copy public folder: %w", err)
 	}
