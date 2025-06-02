@@ -6,6 +6,7 @@ import (
 
 	"github.com/sersi-project/core/common"
 	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/hooks"
 	"github.com/sersi-project/core/tea/menuinput"
 	"github.com/sersi-project/core/tea/spinner"
 	"github.com/sersi-project/core/tea/textinput"
@@ -30,8 +31,10 @@ var Cmd = &cobra.Command{
 func init() {
 	Cmd.Flags().StringP("name", "n", "", "Name of project")
 	Cmd.Flags().StringP("framework", "t", "", "Name of framework for template")
-	Cmd.Flags().StringP("css", "s", "", "Styling for template")
+	Cmd.Flags().StringP("css", "c", "", "Styling for template")
 	Cmd.Flags().StringP("lang", "l", "", "Javascript or Typescript")
+	Cmd.Flags().BoolP("pre-hook", "p", false, "Pre-hook to use")
+	Cmd.Flags().BoolP("post-hook", "o", false, "Post-hook to use")
 }
 
 func Run(cmd *cobra.Command, args []string) {
@@ -42,6 +45,8 @@ func Run(cmd *cobra.Command, args []string) {
 
 	scaffoldBuilder := core.NewScaffoldBuilder()
 
+	preHook, _ := cmd.Flags().GetBool("pre-hook")
+	postHook, _ := cmd.Flags().GetBool("post-hook")
 	projectName, err := cmd.Flags().GetString("name")
 	if err != nil {
 		fmt.Printf("Error getting project name: %s", err)
@@ -141,11 +146,24 @@ func Run(cmd *cobra.Command, args []string) {
 		scaffoldBuilder.Language(ln.(*menuinput.ListModel).Choice)
 	}
 
+	hooks := hooks.InitHooks( projectName, preHook, postHook)
+    err = hooks.RunPreHook()
+    if err != nil {
+        fmt.Printf("Error running pre-hook: %s", err)
+        os.Exit(1)
+    }
+
 	projectPath := utils.GetProjectPath(projectName)
 	loading := tea.NewProgram(spinner.InitialSpinnerModel(projectPath, scaffoldBuilder.Build()))
 	_, err = loading.Run()
 	if err != nil {
 		fmt.Printf(common.ErrorStyle.Render("Error running program: %s"), err)
+		os.Exit(1)
+	}
+
+	err = hooks.RunPostHook()
+	if err != nil {
+		fmt.Printf("Error running post-hook: %s", err)
 		os.Exit(1)
 	}
 }

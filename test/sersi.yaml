@@ -1,6 +1,9 @@
 name: my-project
+hooks:
+    pre: true
+    post: true
 scaffold:
-  frontend:
-    framework: "react"
-    css: "tailwind"
-    lang: "typescript"
+    frontend:
+        framework: "react"
+        css: "tailwind"
+        lang: "typescript"

@@ -16,11 +16,17 @@ type FileParser struct {
 
 type Config struct {
 	Name     string         `yaml:"name"`
+    Hooks HooksConfig `yaml:"hooks"`
 	Scaffold ScaffoldConfig `yaml:"scaffold"`
 }
 
 type ScaffoldConfig struct {
 	Frontend FrontendConfig `yaml:"frontend"`
+}
+
+type HooksConfig struct {
+    PreHook bool `yaml:"pre"`
+    PostHook bool `yaml:"post"`
 }
 
 type FrontendConfig struct {
@@ -59,7 +65,7 @@ func (fp *FileParser) ExceuteMapping() (*Config, error) {
 	if config.Scaffold.Frontend.Language == "" {
 		config.Scaffold.Frontend.Language = "javascript"
 	}
-
+    
 	err = validateConfig(&config)
 	if err != nil {
 		return nil, fmt.Errorf("error in config: %v", err)

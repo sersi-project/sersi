@@ -6,6 +6,7 @@ import (
 
 	"github.com/sersi-project/core/common"
 	"github.com/sersi-project/core/core"
+	"github.com/sersi-project/core/hooks"
 	"github.com/sersi-project/core/tea/spinner"
 	"github.com/sersi-project/core/utils"
 
@@ -30,7 +31,11 @@ func init() {
 func Run(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
 	filePath, _ := cmd.Flags().GetString("file")
-	fmt.Printf("> %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
+
+	if filePath == "" {
+		fmt.Println("Error: File path is required")
+		os.Exit(1)
+	}
 
 	fileParser := core.NewFileParser(filePath)
 
@@ -39,6 +44,15 @@ func Run(cmd *cobra.Command, args []string) {
 		fmt.Println("Error parsing file:", err)
 		os.Exit(1)
 	}
+
+    hooks := hooks.InitHooks(fileParserResult.Name, fileParserResult.Hooks.PreHook, fileParserResult.Hooks.PostHook)
+    err = hooks.RunPreHook()
+    if err != nil {
+        fmt.Println("Error running pre-hook:", err)
+        os.Exit(1)
+    }
+
+    fmt.Printf("> %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
 
 	scaffold := core.NewScaffoldBuilder().
 		ProjectName(fileParserResult.Name).
@@ -53,4 +67,10 @@ func Run(cmd *cobra.Command, args []string) {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+    err = hooks.RunPostHook()
+    if err != nil {
+        fmt.Println("Error running post-hook:", err)
+        os.Exit(1)
+    }
 }
