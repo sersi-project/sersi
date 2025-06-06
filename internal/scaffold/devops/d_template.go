@@ -3,7 +3,7 @@ package devops
 import (
 	"embed"
 
-	"github.com/sersi-project/core/internal/scaffold"
+	"github.com/sersi-project/sersi/internal/scaffold"
 )
 
 //go:embed templates/base/*

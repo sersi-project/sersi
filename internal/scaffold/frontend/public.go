@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/pkg"
 )
 
 //go:embed templates/base/public/**

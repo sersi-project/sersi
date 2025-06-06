@@ -6,12 +6,12 @@ package cmd
 import (
 	"os"
 
-	"github.com/sersi-project/core/cmd/core/build"
-	"github.com/sersi-project/core/cmd/core/create"
-	"github.com/sersi-project/core/cmd/core/version"
-	hookscmd "github.com/sersi-project/core/cmd/pro/hooks"
-	logincmd "github.com/sersi-project/core/cmd/pro/login"
-	templatescmd "github.com/sersi-project/core/cmd/pro/templates"
+	"github.com/sersi-project/sersi/cmd/core/build"
+	"github.com/sersi-project/sersi/cmd/core/create"
+	"github.com/sersi-project/sersi/cmd/core/version"
+	hookscmd "github.com/sersi-project/sersi/cmd/pro/hooks"
+	logincmd "github.com/sersi-project/sersi/cmd/pro/login"
+	templatescmd "github.com/sersi-project/sersi/cmd/pro/templates"
 	"github.com/spf13/cobra"
 )
 

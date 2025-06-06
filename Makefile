@@ -1,5 +1,5 @@
 BINARY_NAME=sersi
-PKG_NAME=github.com/sersi-project/core
+PKG_NAME=github.com/sersi-project/sersi
 
 .PHONY: all build run lint clean test deps build-linux build-windows build-mac build-all
 
@@ -24,20 +24,20 @@ deps:
 	go mod tidy
 
 build-linux:
-	GOOS=linux GOARCH=amd64 go build -o bin/linux/$(BINARY_NAME) .
+	powershell -Command "$$env:GOOS='linux'; $$env:GOARCH='amd64'; go build -o bin/linux/amd64/$(BINARY_NAME) ."
 
 build-windows:
-	GOOS=windows GOARCH=amd64 go build -o bin/windows/$(BINARY_NAME).exe .
+	powershell -Command "$$env:GOOS='windows'; $$env:GOARCH='amd64'; go build -o bin/windows/amd64/$(BINARY_NAME).exe ."
 
 build-mac:
-	GOOS=darwin GOARCH=amd64 go build -o bin/mac/$(BINARY_NAME) .
-	GOOS=darwin GOARCH=arm64 go build -o bin/mac-arm64/$(BINARY_NAME) .
+	powershell -Command "$$env:GOOS='darwin'; $$env:GOARCH='amd64'; go build -o bin/darwin/amd64/$(BINARY_NAME) ."
+	powershell -Command "$$env:GOOS='darwin'; $$env:GOARCH='arm64'; go build -o bin/darwin/arm64/$(BINARY_NAME) ."
 
 build-all:
-	GOOS=linux GOARCH=amd64 go build -o bin/linux/$(BINARY_NAME) .
-	GOOS=windows GOARCH=amd64 go build -o bin/windows/$(BINARY_NAME).exe .
-	GOOS=darwin GOARCH=amd64 go build -o bin/mac/$(BINARY_NAME) .
-	GOOS=darwin GOARCH=arm64 go build -o bin/mac-arm64/$(BINARY_NAME) .
+	powershell -Command "$$env:GOOS='linux'; $$env:GOARCH='amd64'; go build -o bin/linux/amd64/$(BINARY_NAME) ."
+	powershell -Command "$$env:GOOS='windows'; $$env:GOARCH='amd64'; go build -o bin/windows/$(BINARY_NAME).exe ."
+	powershell -Command "$$env:GOOS='darwin'; $$env:GOARCH='amd64'; go build -o bin/darwin/amd64/$(BINARY_NAME) ."
+	powershell -Command "$$env:GOOS='darwin'; $$env:GOARCH='arm64'; go build -o bin/darwin/arm64/$(BINARY_NAME) ."
 
 help:
 	@echo "Makefile commands:"

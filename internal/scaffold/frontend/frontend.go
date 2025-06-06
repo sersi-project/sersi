@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/pkg"
 )
 
 type Frontend struct {
@@ -14,6 +14,7 @@ type Frontend struct {
 	CSS         string
 	Language    string
 	Monorepo    bool
+	Polyrepos   bool
 }
 
 type FrontendBuilder struct {
@@ -51,17 +52,17 @@ func (fb *FrontendBuilder) Monorepo(monorepo bool) *FrontendBuilder {
 	return fb
 }
 
+func (fb *FrontendBuilder) Polyrepos(polyrepos bool) *FrontendBuilder {
+	fb.config.Polyrepos = polyrepos
+	return fb
+}
+
 func (fb *FrontendBuilder) Build() *Frontend {
 	return fb.config
 }
 
 func (f *Frontend) Generate() error {
-	err := pkg.CreateDirectory(f.ProjectName)
-	if err != nil {
-		return f.ProcessError(err)
-	}
-
-	if f.Monorepo {
+	if f.Monorepo && !f.Polyrepos {
 		err := pkg.CreateDirectory(filepath.Join(f.ProjectName, "frontend"))
 		if err != nil {
 			return f.ProcessError(err)
@@ -70,8 +71,20 @@ func (f *Frontend) Generate() error {
 		if err != nil {
 			return f.ProcessError(err)
 		}
-	} else {
+	} else if f.Polyrepos && !f.Monorepo {
+		f.ProjectName = f.ProjectName + "-frontend"
+		err := pkg.CreateDirectory(f.ProjectName)
+		if err != nil {
+			return f.ProcessError(err)
+		}
 		err = AddPublicFolder(f.ProjectName)
+		if err != nil {
+			return f.ProcessError(err)
+		}
+	} else if !f.Monorepo && !f.Polyrepos || f.Monorepo && f.Polyrepos {
+		return fmt.Errorf("invalid project structure")
+	} else {
+		err := AddPublicFolder(f.ProjectName)
 		if err != nil {
 			return f.ProcessError(err)
 		}
@@ -89,13 +102,15 @@ func (f *Frontend) Generate() error {
 
 	if f.Monorepo {
 		goldenTemplate := NewGoldenArchitecture(filepath.Join(f.ProjectName, "frontend"), gtFramework)
-		err = goldenTemplate.Generate()
+		err := goldenTemplate.Generate()
 		if err != nil {
 			return f.ProcessError(err)
 		}
+	} else if f.Monorepo && f.Polyrepos {
+		return f.ProcessError(fmt.Errorf("invalid project structure"))
 	} else {
 		goldenTemplate := NewGoldenArchitecture(f.ProjectName, gtFramework)
-		err = goldenTemplate.Generate()
+		err := goldenTemplate.Generate()
 		if err != nil {
 			return f.ProcessError(err)
 		}
@@ -114,7 +129,7 @@ func (f *Frontend) Generate() error {
 
 	template := templateBuilder.Build()
 
-	err = template.Execute()
+	err := template.Execute()
 	if err != nil {
 		return f.ProcessError(err)
 	}

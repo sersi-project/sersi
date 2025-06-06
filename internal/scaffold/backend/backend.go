@@ -3,8 +3,9 @@ package backend
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/pkg"
 )
 
 var archJS = []string{
@@ -29,6 +30,7 @@ type Backend struct {
 	Framework   string
 	Database    string
 	Monorepo    bool
+	Polyrepos   bool
 }
 
 type BackendBuilder struct {
@@ -47,7 +49,7 @@ func (b *BackendBuilder) ProjectName(projectName string) *BackendBuilder {
 }
 
 func (b *BackendBuilder) Language(language string) *BackendBuilder {
-	b.backend.Language = language
+	b.backend.Language = b.formatLanguage(language)
 	return b
 }
 
@@ -57,12 +59,17 @@ func (b *BackendBuilder) Framework(framework string) *BackendBuilder {
 }
 
 func (b *BackendBuilder) Database(database string) *BackendBuilder {
-	b.backend.Database = database
+	b.backend.Database = b.formatDatabase(database)
 	return b
 }
 
 func (b *BackendBuilder) Monorepo(monorepo bool) *BackendBuilder {
 	b.backend.Monorepo = monorepo
+	return b
+}
+
+func (b *BackendBuilder) Polyrepos(polyrepos bool) *BackendBuilder {
+	b.backend.Polyrepos = polyrepos
 	return b
 }
 
@@ -84,8 +91,13 @@ func (b *Backend) ProcessError(err error) error {
 
 func (b *Backend) createFolders() error {
 	var projectPath string
-	if b.Monorepo {
+	if b.Monorepo && !b.Polyrepos {
 		projectPath = filepath.Join(b.ProjectName, "backend")
+	} else if b.Polyrepos && !b.Monorepo {
+		b.ProjectName = b.ProjectName + "-backend"
+		projectPath = b.ProjectName
+	} else if b.Monorepo && b.Polyrepos {
+		return fmt.Errorf("invalid project structure")
 	} else {
 		projectPath = b.ProjectName
 	}
@@ -125,4 +137,29 @@ func (b *Backend) createFolders() error {
 	}
 
 	return nil
+}
+
+func (b *BackendBuilder) formatLanguage(language string) string {
+	if i := strings.Index(language, "("); i != -1 {
+		language = language[:i]
+	}
+	language = strings.ToLower(language)
+
+	if language == "javascript" || language == "node" {
+		return "js"
+	} else if language == "typescript" || language == "ts" {
+		return "ts"
+	} else if language == "python" {
+		return "py"
+	} else {
+		return language
+	}
+}
+
+func (b *BackendBuilder) formatDatabase(database string) string {
+	if i := strings.Index(database, "("); i != -1 {
+		database = database[:i]
+	}
+	database = strings.ToLower(database)
+	return database
 }

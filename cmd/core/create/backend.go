@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/sersi-project/core/common"
-	"github.com/sersi-project/core/internal/scaffold/backend"
-	"github.com/sersi-project/core/internal/tui/menuinput"
-	"github.com/sersi-project/core/internal/tui/textinput"
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/common"
+	"github.com/sersi-project/sersi/internal/scaffold/backend"
+	"github.com/sersi-project/sersi/internal/tui/menuinput"
+	"github.com/sersi-project/sersi/internal/tui/textinput"
+	"github.com/sersi-project/sersi/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -112,7 +112,7 @@ func RunBackend(cmd *cobra.Command, args []string) {
 	fmt.Printf("◉ %s\n", framework)
 
 	if database == "" {
-		tprogram := tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Database", []string{"PostgreSQL", "MongoDB"}, "Database"))
+		tprogram := tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Database", []string{"PostgreSQL", "MongoDB", "None"}, "Database"))
 		db, err := tprogram.Run()
 		if err != nil {
 			fmt.Println("Error running program:", err)

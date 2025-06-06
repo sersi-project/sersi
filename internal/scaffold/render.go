@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/pkg"
 
 	gotemplate "text/template"
 )

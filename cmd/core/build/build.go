@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sersi-project/core/common"
-	"github.com/sersi-project/core/internal/scaffold"
-	"github.com/sersi-project/core/internal/scaffold/backend"
-	"github.com/sersi-project/core/internal/scaffold/devops"
-	"github.com/sersi-project/core/internal/scaffold/frontend"
-	"github.com/sersi-project/core/internal/tui/spinner"
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/common"
+	"github.com/sersi-project/sersi/internal/scaffold"
+	"github.com/sersi-project/sersi/internal/scaffold/backend"
+	"github.com/sersi-project/sersi/internal/scaffold/frontend"
+	"github.com/sersi-project/sersi/internal/tui/spinner"
+	"github.com/sersi-project/sersi/pkg"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -78,13 +77,6 @@ func RunBuild(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	// loading = tea.NewProgram(spinner.InitialSpinnerModel(pkg.GetProjectPath(fileParserResult.Name), "devops", devops))
-	// _, err = loading.Run()
-	// if err != nil {
-	// 	fmt.Println("Error running program:", err)
-	// 	os.Exit(1)
-	// }
-
 	fmt.Printf("◉ %s scaffolded successfully!\n\nHappy Coding :)\n", greenStyle.Render(fileParserResult.Name))
 }
 
@@ -108,14 +100,4 @@ func buildBackend(fileParserResult *pkg.Config) (scaffold.Scaffold, error) {
 		Monorepo(true).
 		Build()
 	return b, nil
-}
-
-func buildDevops(fileParserResult *pkg.Config) (scaffold.Scaffold, error) {
-	d := devops.NewDevopsBuilder().
-		ProjectName(fileParserResult.Name).
-		CI(fileParserResult.Scaffold.Devops.CI).
-		Docker(fileParserResult.Scaffold.Devops.Docker).
-		Monitoring(fileParserResult.Scaffold.Devops.Monitoring).
-		Build()
-	return d, nil
 }

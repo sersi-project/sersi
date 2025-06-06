@@ -1,7 +1,7 @@
 package templatescmd
 
 import (
-	"github.com/sersi-project/core/common"
+	"github.com/sersi-project/sersi/common"
 	"github.com/spf13/cobra"
 )
 

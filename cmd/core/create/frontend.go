@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/sersi-project/core/common"
-	"github.com/sersi-project/core/internal/scaffold/frontend"
-	"github.com/sersi-project/core/internal/tui/menuinput"
-	"github.com/sersi-project/core/internal/tui/textinput"
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/common"
+	"github.com/sersi-project/sersi/internal/scaffold/frontend"
+	"github.com/sersi-project/sersi/internal/tui/menuinput"
+	"github.com/sersi-project/sersi/internal/tui/textinput"
+	"github.com/sersi-project/sersi/pkg"
 	"github.com/spf13/cobra"
 )
 

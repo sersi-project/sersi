@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/sersi-project/core/internal/scaffold"
+	"github.com/sersi-project/sersi/internal/scaffold"
 )
 
 type FTemplateMap struct {
@@ -71,6 +71,11 @@ func (b *FTemplateBuilder) Monorepo(monorepo bool) *FTemplateBuilder {
 	return b
 }
 
+func (b *FTemplateBuilder) Polyrepos(polyrepos bool) *FTemplateBuilder {
+	b.template.Polyrepos = polyrepos
+	return b
+}
+
 func (b *FTemplateBuilder) Build() *FTemplate {
 	return b.template
 }
@@ -81,6 +86,7 @@ type FTemplate struct {
 	CSS         string
 	Language    string
 	Monorepo    bool
+	Polyrepos   bool
 }
 
 func (t *FTemplate) Execute() error {
@@ -125,7 +131,7 @@ func (t *FTemplate) renderAppFile() error {
 					return err
 				}
 			} else {
-				err = scaffold.RenderTemplate(t, templatesFolder, "templates/base/App.tmpl", "frontend/src/App.tsx", t.ProjectName)
+				err = scaffold.RenderTemplate(t, templatesFolder, "templates/base/App.tmpl", "src/App.tsx", t.ProjectName)
 				if err != nil {
 					return err
 				}

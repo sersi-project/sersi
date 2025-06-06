@@ -20,12 +20,12 @@ npm install -g sersi
 
 ### Option 3: Download Prebuilt Binary (Windows, macOS, Linux)
 
-1. Visit the [Releases](https://github.com/sersi-project/core/releases) page
+1. Visit the [Releases](https://github.com/sersi-project/sersi/releases) page
 2. Download the latest binary for your platform
 
-- Windows: `sersi-windows-x64.exe`
-- macOS: `sersi-macos-x64`
-- Linux: `sersi-linux-x64`
+-   Windows: `sersi-windows-x64.exe`
+-   macOS: `sersi-macos-x64`
+-   Linux: `sersi-linux-x64`
 
 3. Make the binary executable
 

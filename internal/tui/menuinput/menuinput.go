@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/sersi-project/core/internal/tui/styles"
+	"github.com/sersi-project/sersi/internal/tui/styles"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"

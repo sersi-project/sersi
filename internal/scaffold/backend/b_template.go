@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/sersi-project/core/internal/scaffold"
+	"github.com/sersi-project/sersi/internal/scaffold"
 )
 
 type BTemplateMap struct {
 	TemplatePath string
-	outputFile   string
+	OutputFile   string
 }
 
 //go:embed templates/base/*
@@ -94,7 +94,13 @@ func (b *BTemplateBuilder) Monorepo(monorepo bool) *BTemplateBuilder {
 }
 
 func (b *BTemplateBuilder) Build() *BTemplate {
-	return b.template
+	return &BTemplate{
+		ProjectName: b.template.ProjectName,
+		Language:    b.template.Language,
+		Database:    b.template.Database,
+		Framework:   b.template.Framework,
+		Monorepo:    b.template.Monorepo,
+	}
 }
 
 type BTemplate struct {
@@ -103,6 +109,7 @@ type BTemplate struct {
 	Database    string
 	Framework   string
 	Monorepo    bool
+	Polyrepos   bool
 }
 
 func (t *BTemplate) Execute() error {
@@ -140,12 +147,32 @@ func (t *BTemplate) Execute() error {
 func (t *BTemplate) renderFiles(files []BTemplateMap) error {
 	for _, file := range files {
 		if t.Monorepo {
-			file.outputFile = filepath.Join("backend", file.outputFile)
+			file.OutputFile = filepath.Join("backend", file.OutputFile)
 		}
-		err := scaffold.RenderTemplate(t, templatesFolder, file.TemplatePath, file.outputFile, t.ProjectName)
+		err := scaffold.RenderTemplate(t, templatesFolder, file.TemplatePath, file.OutputFile, t.ProjectName)
 		if err != nil {
 			return fmt.Errorf("failed to render file: %w", err)
 		}
 	}
 	return nil
+}
+
+func GetBaseFiles() []BTemplateMap {
+	return baseFiles
+}
+
+func GetJSFiles() []BTemplateMap {
+	return jsFiles
+}
+
+func GetTSFiles() []BTemplateMap {
+	return tsFiles
+}
+
+func GetGoFiles() []BTemplateMap {
+	return goFiles
+}
+
+func GetPyFiles() []BTemplateMap {
+	return pyFiles
 }

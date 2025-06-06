@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sersi-project/core/internal/tui/styles"
-	"github.com/sersi-project/core/pkg"
+	"github.com/sersi-project/sersi/internal/tui/styles"
+	"github.com/sersi-project/sersi/pkg"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"

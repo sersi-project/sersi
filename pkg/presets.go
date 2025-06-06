@@ -59,3 +59,9 @@ var SveltePreset Preset = Preset{
 		Monitoring: "none",
 	},
 }
+
+var StackPresets = []Preset{
+	MernPreset,
+	FastAPIPreset,
+	SveltePreset,
+}
