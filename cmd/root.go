@@ -6,10 +6,12 @@ package cmd
 import (
 	"os"
 
-	"github.com/sersi-project/core/cmd/build"
-	"github.com/sersi-project/core/cmd/create"
-	"github.com/sersi-project/core/cmd/version"
-
+	"github.com/sersi-project/core/cmd/core/build"
+	"github.com/sersi-project/core/cmd/core/create"
+	"github.com/sersi-project/core/cmd/core/version"
+	hookscmd "github.com/sersi-project/core/cmd/pro/hooks"
+	logincmd "github.com/sersi-project/core/cmd/pro/login"
+	templatescmd "github.com/sersi-project/core/cmd/pro/templates"
 	"github.com/spf13/cobra"
 )
 
@@ -17,15 +19,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "sersi",
 	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Long:  `A longer description that spans multiplr line`,
 }
 
 func Execute() {
@@ -36,9 +30,12 @@ func Execute() {
 }
 
 func addSubcommand() {
-	rootCmd.AddCommand(version.Cmd)
-	rootCmd.AddCommand(create.Cmd)
-	rootCmd.AddCommand(build.Cmd)
+	rootCmd.AddCommand(create.CreateCmd)
+	rootCmd.AddCommand(build.BuildCmd)
+	rootCmd.AddCommand(version.VersionCmd)
+	rootCmd.AddCommand(hookscmd.HooksCmd)
+	rootCmd.AddCommand(logincmd.LoginCmd)
+	rootCmd.AddCommand(templatescmd.TemplatesCmd)
 }
 
 func init() {

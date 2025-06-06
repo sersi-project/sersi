@@ -1,0 +1,45 @@
+{{- if eq .Language "js" }}
+{
+  "name": "{{ .ProjectName }}",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "sersi",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+  {{- if eq .Framework "express" }}
+    "express": "^5.1.0"
+  {{- else if eq .Framework "fastify" }}
+    "fastify": "^5.3.3"
+  {{- end }}
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
+{{- end }}
+{{- if eq .Language "go" }}
+module {{ .ProjectName }}
+
+go 1.23.4
+
+{{- if eq .Framework "chi" }}
+require (
+	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/cors v1.2.1
+)
+{{- else if eq .Framework "gin" }}
+require (
+	github.com/gin-contrib/cors v1.7.5
+	github.com/gin-gonic/gin v1.10.1
+)
+{{- end }}
+{{- end }}
+{{- if eq .Language "python" }}
+
+{{- end }}

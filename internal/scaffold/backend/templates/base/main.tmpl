@@ -1,0 +1,64 @@
+{{- if eq .Language "js" }}
+{{- if eq .Framework "express" }}
+import express from "express";
+import routes from "./routes/route.js";
+
+const app = express();
+
+app.use(express.json());
+app.use("/api", routes);
+
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+{{- else if eq .Framework "fastify" }}
+import Fastify from "fastify";
+import setRoutes from "./routes/routes.js";
+
+
+let fastify = Fastify({
+  logger: true
+})
+
+fastify = setRoutes(fastify);
+
+
+try {
+  await fastify.listen({ port: 3000 })
+} catch (err) {
+  fastify.log.error(err)
+  process.exit(1)
+}
+{{- end }}
+{{- end }}
+{{- if eq .Language "go" }}
+package main
+
+{{- if eq .Framework "gin" }}
+import "myproject/routes"
+
+func main() {
+	router := routes.NewRouter()
+	err := router.Run(":3000")
+{{- else if eq .Framework "chi" }}
+import (
+	"log"
+	"myproject/routes"
+	"net/http"
+)
+
+func main() {
+	router := routes.NewRouter()
+	log.Printf("Server running on http://localhost:3000")
+	err := http.ListenAndServe(":3000", router)
+{{- end }}
+	if err != nil {
+		panic("Server failed to start: " + err.Error())
+	}
+}
+{{- end }}
+{{- if eq .Language "python" }}
+{{- if eq .Framework "fastapi" }}
+
+{{- end }}
+{{- end }}

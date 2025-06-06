@@ -1,0 +1,136 @@
+{{- if eq .Language "js" }}
+{{- if eq .Framework "express" }}
+import express from "express";
+import { getUsersController, createUserController, updateUserController, deleteUserController } from "../controllers/controller.js";
+
+const router = express.Router();
+
+router.get("/users", async (_, res) => {
+  try {
+    const users = await getUsersController();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/users", async (req, res) => {
+  try {
+    const user = await createUserController(req.body);
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/users", async (req, res) => {
+    try {
+        const user = await updateUserController(req.body);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+router.delete("/users", async (req, res) => {
+    try {
+        const user = await deleteUserController(req.body);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+export default router;
+{{- else if eq .Framework "fastify" }}
+import userController from "../controllers/controller.js";
+
+const setRoutes = (app) => {
+
+    const controller = userController();
+
+    app.route({
+        method: "GET",
+        url: "/api/users",
+        handler: controller.getAllUsers
+    });
+
+    app.route({
+        method: "POST",
+        url: "/api/users",
+        handler: controller.createUser
+    });
+
+    app.route({
+        method: "PUT",
+        url: "/api/users",
+        handler: controller.updateUser
+    });
+
+    app.route({
+        method: "DELETE",
+        url: "/api/users",
+        handler: controller.deleteUser
+    });
+
+    return app;
+};
+
+export default setRoutes;
+{{- end }}
+{{- end }}
+{{- if eq .Language "go" }}
+package routes
+{{- if eq .Framework "chi" }}
+
+import (
+	"myproject/handlers"
+	"myproject/middleware"
+
+	"github.com/go-chi/chi"
+	chimiddleware "github.com/go-chi/chi/middleware"
+)
+
+func NewRouter() *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(chimiddleware.Logger)
+	r.Use(middleware.AllowCors())
+	r = AddUserRoutes(r)
+	return r
+}
+
+func AddUserRoutes(r *chi.Mux) *chi.Mux {
+	handler := handlers.NewHandler()
+	r.Get("/api/users", handler.GetUser)
+	return r
+}
+{{- else if eq .Framework "gin" }}
+
+import (
+	"myproject/handlers"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
+
+func NewRouter() *gin.Engine {
+	router := gin.Default()
+	router.Use(cors.Default())
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
+	api := router.Group("/api")
+	{
+		users := api.Group("/users")
+		{
+			handler := handlers.NewHandler()
+			users.GET("/", handler.GetUser)
+			users.POST("/", handler.CreateUser)
+		}
+	}
+
+	return router
+}
+{{- end }}
+{{- end }}
