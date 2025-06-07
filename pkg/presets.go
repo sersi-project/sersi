@@ -18,9 +18,8 @@ var MernPreset Preset = Preset{
 		Database:  "mongodb",
 	},
 	Devops: DevopsConfig{
-		CI:         "github",
-		Docker:     false,
-		Monitoring: "none",
+		CI:     "github",
+		Docker: false,
 	},
 }
 
@@ -36,9 +35,8 @@ var FastAPIPreset Preset = Preset{
 		Database:  "postgresql",
 	},
 	Devops: DevopsConfig{
-		CI:         "github",
-		Docker:     false,
-		Monitoring: "none",
+		CI:     "github",
+		Docker: false,
 	},
 }
 
@@ -54,9 +52,8 @@ var SveltePreset Preset = Preset{
 		Database:  "postgresql",
 	},
 	Devops: DevopsConfig{
-		CI:         "github",
-		Docker:     false,
-		Monitoring: "none",
+		CI:     "github",
+		Docker: false,
 	},
 }
 
