@@ -1,0 +1,99 @@
+{{- if eq .Language "js" }}
+{{- if eq .Framework "express" }}
+import DummyDB from "../db/dummy_db.js";
+
+const db = new DummyDB();
+
+const getUsersService = async () => {
+    try {
+        const users = await db.findAll();
+        return users;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const createUserService = async (user) => {
+    try {
+        const newUser = await db.create(user);
+        return newUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const updateUserService = async (user) => {
+    try {
+        const updatedUser = await db.update(user);
+        return updatedUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const deleteUserService = async (user) => {
+    try {
+        const deletedUser = await db.delete(user);
+        return deletedUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export { getUsersService, createUserService, updateUserService, deleteUserService };
+{{- else if eq .Framework "fastify" }}
+import DummyDB from "../db/dummy_db.js";
+
+const userService = () => {
+    const db = new DummyDB();
+    const getAllUsers = async () => {
+        return await db.findAll();
+    };
+
+    const createUser = async (user) => {
+        return await db.create(user);
+    };
+
+    const updateUser = async (user) => {
+        return await db.update(user);
+    };
+
+    const deleteUser = async (user) => {
+        return await db.delete(user);
+    };
+
+    return {
+        getAllUsers,
+        createUser,
+        updateUser,
+        deleteUser
+    };
+};
+
+export default userService;
+{{- end }}
+{{- else if eq .Language "go" }}
+package services
+
+import (
+	"myproject/model"
+	"myproject/repository"
+)
+
+type Service struct {
+	dbClient *repository.DummyDB
+}
+
+func NewService() *Service {
+	return &Service{
+		dbClient: repository.NewDummyDBClient(),
+	}
+}
+func (s *Service) GetUser() []model.User {
+	return s.dbClient.FindAll()
+}
+
+func (s *Service) CreateUser(user model.User) []model.User {
+	return s.dbClient.Insert(user)
+}
+{{- end }}

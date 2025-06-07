@@ -1,4 +1,5 @@
 bin/
+dlv-debug/
 
 .env
 .DS_Store

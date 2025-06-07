@@ -1,0 +1,173 @@
+{{- if eq .Language "js" }}
+{{- if eq .Framework "express" }}
+import { getUsersService } from "../services/service.js";
+
+const getUsersController = async () => {
+    try {
+        const users = await getUsersService();
+        return users;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const createUserController = async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        const user = {
+            name, email
+        }
+        const newUser = await createUserService(user);
+        res.status(201).json(newUser);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const updateUserController = async (req, res) => {
+    try {
+        const user = await updateUserService(req.body);
+        res.status(200).json(user);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const deleteUserController = async (req, res) => {
+    try {
+        const user = await deleteUserService(req.body);
+        res.status(200).json(user);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export { getUsersController };
+{{- else if eq .Framework "fastify" }}
+import userService from "../services/service.js";
+import UserModel from "../models/model.js";
+
+const userController = () => {
+    const service = userService();
+    const getAllUsers = async (request, reply) => {
+        try {
+            let res = await service.getAllUsers();
+            reply.send(res);
+        } catch (error) {
+            reply.send(error);
+        }
+    };
+
+    const createUser = async (request, reply) => {
+        try {
+            let {name, email} = request.body;
+            let user = new UserModel(name, email);
+            let res = await service.createUser(user);
+            reply.send(res);
+        } catch (error) {
+            reply.send(error);
+        }
+    };
+
+    const updateUser = async (request, reply) => {
+        try {
+            let {name, email} = request.body;
+            let user = new UserModel(name, email);
+            let res = await service.updateUser(user);
+            reply.send(res);
+        } catch (error) {
+            reply.send(error);
+        }
+    };
+
+    const deleteUser = async(request, reply) => {
+        try {
+            let {name, email} = request.body;
+            let user = new UserModel(name, email);
+            let res = await service.deleteUser(user);
+            reply.send(res);
+        } catch (error) {
+            reply.send(error);
+        }
+    };
+
+    return {
+        getAllUsers,
+        createUser,
+        updateUser,
+        deleteUser
+    };
+};
+
+export default userController;
+{{- end }}
+{{- end }}
+{{- if eq .Language "go" }}
+package handlers
+{{- if eq .Framework "gin" }}
+
+import (
+	"myproject/model"
+	"myproject/services"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Handler struct {
+	service *services.Service
+}
+
+func NewHandler() *Handler {
+	return &Handler{
+		service: services.NewService(),
+	}
+}
+
+func (h *Handler) GetUser(c *gin.Context) {
+	// sanitize user
+	h.service.GetUser()
+	c.JSON(http.StatusOK, gin.H{"message": "User fetched successfully"})
+}
+
+func (h *Handler) CreateUser(c *gin.Context) {
+	var newUser model.User
+	if err := c.ShouldBindBodyWithJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	h.service.CreateUser(newUser)
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "data": newUser})
+}
+{{- else if eq .Framework "chi" }}
+
+import (
+	"encoding/json"
+	"myproject/services"
+	"net/http"
+)
+
+type Handler struct {
+	service *services.Service
+}
+
+func NewHandler() *Handler {
+	return &Handler{
+		service: services.NewService(),
+	}
+}
+
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	user := h.service.GetUser()
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(user)
+	if err != nil {
+		panic("Failed to parse to JSON")
+	}
+}
+{{- end }}
+{{- end }}
+{{- if eq .Language "python" }}
+
+{{- end }}

@@ -1,6 +1,14 @@
 name: my-project
 scaffold:
-  frontend:
-    framework: "react"
-    css: "tailwind"
-    lang: "typescript"
+    frontend:
+        framework: "react"
+        css: "tailwind"
+        lang: "js"
+    backend:
+        lang: "js"
+        framework: "express"
+        database: "postgresql"
+    devops:
+        ci: "github"
+        docker: true
+        monitoring: "prometheus"
