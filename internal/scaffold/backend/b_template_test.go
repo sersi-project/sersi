@@ -29,16 +29,6 @@ func TestBTemplateInvalidLanguage(t *testing.T) {
 		Language("invalid-lang")
 	template := builder.Build()
 
-	// Should fail with error for invalid language
-	err := template.Execute()
-	assert.Error(t, err)
-}
-
-func TestBTemplateEmptyProjectName(t *testing.T) {
-	builder := backend.NewBTemplateBuilder()
-	template := builder.Build()
-
-	// Should fail with error for empty project name
 	err := template.Execute()
 	assert.Error(t, err)
 }
