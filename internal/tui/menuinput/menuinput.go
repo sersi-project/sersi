@@ -147,7 +147,7 @@ func (m *ListModel) View() string {
 		return ""
 	}
 	if *m.Quitting {
-		return fmt.Sprintf("\n%s\n", m.styles.Cancel.Render("Operation cancelled!"))
+		return fmt.Sprintf("\n%s\n", m.styles.Cancel.Render("◉ Operation cancelled"))
 	}
 	stepTitle := fmt.Sprintf("\nStep %s out of %s - %s", m.styles.StepNumber.Render(fmt.Sprintf("%d", m.step)), m.styles.StepTotal.Render(fmt.Sprintf("%d", m.totalSteps)), titleStyle.Render(m.header))
 	divider := dividerStyle.Render("---" + strings.Repeat("-", defaultWidth+10) + "---")

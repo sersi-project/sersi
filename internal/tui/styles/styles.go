@@ -24,7 +24,7 @@ func DefaultStyles() *Styles {
 		SelectionTitle: lipgloss.NewStyle().Foreground(lipgloss.Color("#36E6E6")).Italic(true),
 		Selection:      lipgloss.NewStyle().Bold(true),
 		Result:         lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFF00")).Bold(true),
-		Cancel:         lipgloss.NewStyle().Foreground(lipgloss.Color("#EE4B2B")).Bold(true),
+		Cancel:         lipgloss.NewStyle().Background(lipgloss.Color("#540303")).Bold(true),
 		StepNumber:     lipgloss.NewStyle().Foreground(lipgloss.Color("#36E6E6")).Italic(true),
 		StepTotal:      lipgloss.NewStyle().Foreground(lipgloss.Color("#36E6E6")).Italic(true),
 	}

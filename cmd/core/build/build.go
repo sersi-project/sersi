@@ -86,7 +86,8 @@ func buildFrontend(fileParserResult *pkg.Config) (scaffold.Scaffold, error) {
 		Framework(fileParserResult.Scaffold.Frontend.Framework).
 		CSS(fileParserResult.Scaffold.Frontend.CSS).
 		Language(fileParserResult.Scaffold.Frontend.Language).
-		Monorepo(true).
+		Monorepo(fileParserResult.Structure == "monorepo" || fileParserResult.Structure == "mono").
+		Polyrepos(fileParserResult.Structure == "polyrepos" || fileParserResult.Structure == "poly").
 		Build()
 	return f, nil
 }
@@ -97,7 +98,8 @@ func buildBackend(fileParserResult *pkg.Config) (scaffold.Scaffold, error) {
 		Language(fileParserResult.Scaffold.Backend.Language).
 		Framework(fileParserResult.Scaffold.Backend.Framework).
 		Database(fileParserResult.Scaffold.Backend.Database).
-		Monorepo(true).
+		Monorepo(fileParserResult.Structure == "monorepo" || fileParserResult.Structure == "mono").
+		Polyrepos(fileParserResult.Structure == "polyrepos" || fileParserResult.Structure == "poly").
 		Build()
 	return b, nil
 }

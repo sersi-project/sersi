@@ -81,7 +81,7 @@ func (f *Frontend) Generate() error {
 		if err != nil {
 			return f.ProcessError(err)
 		}
-	} else if !f.Monorepo && !f.Polyrepos || f.Monorepo && f.Polyrepos {
+	} else if f.Monorepo && f.Polyrepos {
 		return fmt.Errorf("invalid project structure")
 	} else {
 		err := AddPublicFolder(f.ProjectName)

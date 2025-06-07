@@ -13,8 +13,9 @@ type FileParser struct {
 }
 
 type Config struct {
-	Name     string         `yaml:"name"`
-	Scaffold ScaffoldConfig `yaml:"scaffold"`
+	Name      string         `yaml:"name"`
+	Structure string         `yaml:"structure"`
+	Scaffold  ScaffoldConfig `yaml:"scaffold"`
 }
 
 type ScaffoldConfig struct {
@@ -36,14 +37,25 @@ type BackendConfig struct {
 }
 
 type DevopsConfig struct {
-	CI         string `yaml:"ci"`
-	Docker     bool   `yaml:"docker"`
-	Monitoring string `yaml:"monitoring"`
+	CI     string `yaml:"ci"`
+	Docker bool   `yaml:"docker"`
 }
 
 func NewFileParser(filePath string) *FileParser {
 	return &FileParser{
 		filePath: filePath,
+	}
+}
+
+func NewConfig(projectName string, frontend FrontendConfig, backend BackendConfig, devops DevopsConfig) *Config {
+	return &Config{
+		Name:      projectName,
+		Structure: "monorepo",
+		Scaffold: ScaffoldConfig{
+			Frontend: frontend,
+			Backend:  backend,
+			Devops:   devops,
+		},
 	}
 }
 
@@ -80,34 +92,22 @@ func (fp *FileParser) ExceuteMapping() (*Config, error) {
 	return &config, nil
 }
 
-func (fp *FileParser) GenerateSersiYaml() error {
+func (c *Config) GenerateSersiYaml(filePath string) error {
+	yamlData, err := yaml.Marshal(&c)
+	if err != nil {
+		return fmt.Errorf("error marshalling YAML: %v", err)
+	}
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("error getting current working directory: %v", err)
 	}
-	path := filepath.Join(cwd, "sersi.yaml")
-	if fp.filePath != "" {
-		path = filepath.Join(cwd, fp.filePath)
-	}
 
-	data, err := os.ReadFile(path)
+	path := filepath.Join(cwd, filePath, "sersi.yaml")
+
+	err = os.WriteFile(path, yamlData, 0o644)
 	if err != nil {
-		return fmt.Errorf("error reading file: %v", err)
-	}
-
-	var config Config
-	err = yaml.Unmarshal(data, &config)
-	if err != nil {
-		return fmt.Errorf("error unmarshalling YAML: %v", err)
-	}
-
-	if config.Scaffold.Frontend.Language == "" {
-		config.Scaffold.Frontend.Language = "javascript"
-	}
-
-	err = validateConfig(&config)
-	if err != nil {
-		return fmt.Errorf("error in config: %v", err)
+		return fmt.Errorf("error writing file: %v", err)
 	}
 
 	return nil

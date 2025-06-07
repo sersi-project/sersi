@@ -28,6 +28,7 @@ func init() {
 	FrontendCmd.Flags().StringP("framework", "t", "", "Name of framework for template")
 	FrontendCmd.Flags().StringP("css", "s", "", "Styling for template")
 	FrontendCmd.Flags().StringP("lang", "l", "", "Javascript or Typescript")
+	FrontendCmd.Flags().Bool("dry-run", false, "Dry run for testing")
 }
 
 func RunFrontend(cmd *cobra.Command, args []string) {
@@ -48,16 +49,16 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
+		if *pn.(*textinput.Model).Quitting {
+			os.Exit(0)
+		}
 		projectName = pn.(textinput.Model).Value
-		if err := pkg.ValidateName(projectName); err != nil {
-			os.Exit(1)
-		}
-	} else {
-		if err := pkg.ValidateName(projectName); err != nil {
-			fmt.Println("Error validating project name:", err)
-			os.Exit(1)
-		}
 	}
+	if err := pkg.ValidateName(projectName); err != nil {
+		fmt.Println("Error validating project name:", err)
+		os.Exit(1)
+	}
+
 	currentStep++
 	fmt.Printf("◉ %s\n", projectName)
 
@@ -68,15 +69,19 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
-		framework = fm.(*menuinput.ListModel).Choice
-		if err := pkg.ValidateOptions(strings.ToLower(framework), pkg.FrontendFrameworks); err != nil {
-			fmt.Println("Error validating framework:", err)
-			os.Exit(1)
+		if *fm.(*menuinput.ListModel).Quitting {
+			os.Exit(0)
 		}
+		framework = fm.(*menuinput.ListModel).Choice
 		if framework == "" {
 			os.Exit(0)
 		}
 	}
+	if err := pkg.ValidateOptions(strings.ToLower(framework), pkg.FrontendFrameworks); err != nil {
+		fmt.Println("Error validating framework:", err)
+		os.Exit(1)
+	}
+
 	currentStep++
 
 	fmt.Printf("◉ %s\n", framework)
@@ -88,14 +93,17 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
-		css = cssm.(*menuinput.ListModel).Choice
-		if err := pkg.ValidateOptions(strings.ToLower(css), pkg.FrontendCSS); err != nil {
-			fmt.Println("Error validating CSS:", err)
-			os.Exit(1)
+		if *cssm.(*menuinput.ListModel).Quitting {
+			os.Exit(0)
 		}
+		css = cssm.(*menuinput.ListModel).Choice
 		if css == "" {
 			os.Exit(0)
 		}
+	}
+	if err := pkg.ValidateOptions(strings.ToLower(css), pkg.FrontendCSS); err != nil {
+		fmt.Println("Error validating CSS:", err)
+		os.Exit(1)
 	}
 	currentStep++
 	fmt.Printf("◉ %s\n", css)
@@ -107,17 +115,25 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
-		lang = langm.(*menuinput.ListModel).Choice
-		if err := pkg.ValidateOptions(strings.ToLower(lang), pkg.FrontendLanguages); err != nil {
-			fmt.Println("Error validating language:", err)
-			os.Exit(1)
+		if *langm.(*menuinput.ListModel).Quitting {
+			os.Exit(0)
 		}
+		lang = langm.(*menuinput.ListModel).Choice
 		if lang == "" {
 			os.Exit(0)
 		}
 	}
-	currentStep++
+	if err := pkg.ValidateOptions(strings.ToLower(lang), pkg.FrontendLanguages); err != nil {
+		fmt.Println("Error validating language:", err)
+		os.Exit(1)
+	}
 	fmt.Printf("◉ %s\n", lang)
+
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+	if dryRun {
+		fmt.Println("◉ Dry run enabled")
+		os.Exit(0)
+	}
 
 	frontend := frontend.NewFrontendBuilder().
 		ProjectName(projectName).
@@ -125,13 +141,24 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		Framework(framework).
 		CSS(css).
 		Monorepo(false).
+		Polyrepos(false).
 		Build()
 
 	fmt.Printf("◉ %s\n", "Building...")
 	err := frontend.Generate()
 	if err != nil {
 		fmt.Println("Error creating frontend project:", err)
-		return
+		os.Exit(1)
+	}
+
+	frontendConfig := pkg.NewConfig(projectName, pkg.FrontendConfig{
+		Framework: framework,
+		CSS:       css,
+		Language:  lang,
+	}, pkg.BackendConfig{}, pkg.DevopsConfig{})
+	if err := frontendConfig.GenerateSersiYaml(projectName); err != nil {
+		fmt.Println("Error creating sersi.yaml:", err)
+		os.Exit(1)
 	}
 	fmt.Printf("◉ %s\n", "Frontend project created successfully")
 }

@@ -30,6 +30,7 @@ func init() {
 
 	CreateCmd.Flags().StringP("name", "n", "", "Name of project")
 	CreateCmd.Flags().Bool("custom", false, "Custom setup")
+	CreateCmd.Flags().Bool("dry-run", false, "Dry run for testing")
 }
 
 func RunCreate(cmd *cobra.Command, args []string) {
@@ -47,6 +48,10 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		if err != nil {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
+		}
+
+		if *pn.(textinput.Model).Quitting {
+			os.Exit(0)
 		}
 
 		projectName = pn.(textinput.Model).Value
@@ -206,9 +211,8 @@ func RunCreate(cmd *cobra.Command, args []string) {
 				Database:  backendDatabase,
 			},
 			Devops: pkg.DevopsConfig{
-				CI:         "github",
-				Docker:     false,
-				Monitoring: "none",
+				CI:     "github",
+				Docker: false,
 			},
 		}
 	}
@@ -232,6 +236,12 @@ func RunCreate(cmd *cobra.Command, args []string) {
 
 	if projectStructureChoice == "Polyrepos" {
 		polyrepos = true
+	}
+
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+	if dryRun {
+		fmt.Println("◉ Dry run enabled")
+		os.Exit(0)
 	}
 
 	fmt.Println("◉ Creating frontend project...")
@@ -264,6 +274,28 @@ func RunCreate(cmd *cobra.Command, args []string) {
 	if err := backend.Generate(); err != nil {
 		fmt.Println("Error creating backend project:", err)
 		os.Exit(1)
+	}
+
+	if monorepo {
+		config := pkg.NewConfig(projectName, preset.Frontend, preset.Backend, pkg.DevopsConfig{})
+		if err := config.GenerateSersiYaml(projectName); err != nil {
+			fmt.Println("Error creating sersi.yaml:", err)
+			os.Exit(1)
+		}
+	}
+
+	if polyrepos {
+		frontendConfig := pkg.NewConfig(projectName, preset.Frontend, pkg.BackendConfig{}, pkg.DevopsConfig{})
+		if err := frontendConfig.GenerateSersiYaml(projectName); err != nil {
+			fmt.Println("Error creating sersi.yaml:", err)
+			os.Exit(1)
+		}
+
+		backendConfig := pkg.NewConfig(projectName, pkg.FrontendConfig{}, preset.Backend, pkg.DevopsConfig{})
+		if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
+			fmt.Println("Error creating sersi.yaml:", err)
+			os.Exit(1)
+		}
 	}
 
 	fmt.Printf("◉ %s created successfully\n", projectName)

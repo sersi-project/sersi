@@ -25,7 +25,8 @@ func init() {
 	BackendCmd.Flags().StringP("name", "n", "", "Name of the project")
 	BackendCmd.Flags().StringP("framework", "t", "", "Name of framework for template")
 	BackendCmd.Flags().StringP("database", "d", "", "Database for template")
-	BackendCmd.Flags().StringP("language", "l", "", "Javascript or Typescript")
+	BackendCmd.Flags().StringP("lang", "l", "", "Javascript or Typescript")
+	BackendCmd.Flags().Bool("dry-run", false, "Dry run for testing")
 }
 
 func RunBackend(cmd *cobra.Command, args []string) {
@@ -33,9 +34,10 @@ func RunBackend(cmd *cobra.Command, args []string) {
 	fmt.Println("◉ Creating a new backend project...")
 
 	projectName, _ := cmd.Flags().GetString("name")
-	language, _ := cmd.Flags().GetString("language")
+	language, _ := cmd.Flags().GetString("lang")
 	framework, _ := cmd.Flags().GetString("framework")
 	database, _ := cmd.Flags().GetString("database")
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
 
 	currentStep := 1
 	if projectName == "" {
@@ -51,9 +53,10 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		}
 
 		projectName = pn.(*textinput.Model).Value
-		if err := pkg.ValidateName(projectName); err != nil {
-			os.Exit(1)
-		}
+	}
+	if err := pkg.ValidateName(projectName); err != nil {
+		fmt.Println("Error validating project name:", err)
+		os.Exit(1)
 	}
 	currentStep++
 	fmt.Printf("◉ %s\n", projectName)
@@ -66,12 +69,13 @@ func RunBackend(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 		language = langm.(*menuinput.ListModel).Choice
-		if err := pkg.ValidateOptions(strings.ToLower(language), pkg.BackendLanguages); err != nil {
-			os.Exit(1)
-		}
 		if language == "" {
 			os.Exit(0)
 		}
+	}
+	if err := pkg.ValidateOptions(strings.ToLower(language), pkg.BackendLanguages); err != nil {
+		fmt.Println("Error validating language:", err)
+		os.Exit(1)
 	}
 	currentStep++
 	fmt.Printf("◉ %s\n", language)
@@ -99,14 +103,13 @@ func RunBackend(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 		framework = framem.(*menuinput.ListModel).Choice
-
-		if err := pkg.ValidateOptions(strings.ToLower(framework), opts); err != nil {
-			fmt.Println("Error validating framework:", err)
-			os.Exit(1)
-		}
 		if framework == "" {
 			os.Exit(0)
 		}
+	}
+	if err := pkg.ValidateOptions(strings.ToLower(framework), opts); err != nil {
+		fmt.Println("Error validating framework:", err)
+		os.Exit(1)
 	}
 	currentStep++
 	fmt.Printf("◉ %s\n", framework)
@@ -119,16 +122,21 @@ func RunBackend(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 		database = db.(*menuinput.ListModel).Choice
-		if err := pkg.ValidateOptions(strings.ToLower(database), pkg.DatabaseFrameworks); err != nil {
-			fmt.Println("Error validating database:", err)
-			os.Exit(1)
-		}
 		if database == "" {
 			os.Exit(0)
 		}
 	}
+	if err := pkg.ValidateOptions(strings.ToLower(database), pkg.DatabaseFrameworks); err != nil {
+		fmt.Println("Error validating database:", err)
+		os.Exit(1)
+	}
 
 	fmt.Printf("◉ %s\n", database)
+
+	if dryRun {
+		fmt.Println("◉ Dry run enabled")
+		os.Exit(0)
+	}
 
 	backend := backend.NewBackendBuilder().
 		ProjectName(projectName).
@@ -136,7 +144,18 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		Framework(framework).
 		Database(database).
 		Monorepo(false).
+		Polyrepos(false).
 		Build()
+
+	backendConfig := pkg.NewConfig(projectName, pkg.FrontendConfig{}, pkg.BackendConfig{
+		Framework: framework,
+		Language:  language,
+		Database:  database,
+	}, pkg.DevopsConfig{})
+	if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
+		fmt.Println("Error creating sersi.yaml:", err)
+		os.Exit(1)
+	}
 
 	fmt.Printf("◉ %s\n", "Building...")
 	err := backend.Generate()
