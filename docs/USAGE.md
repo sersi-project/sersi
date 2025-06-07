@@ -9,9 +9,38 @@
 sersi create [flags]
 ```
 
-Alternatively, you can use flags to do everything in one go.
+### subcommands:
 
-Available Flags:
+-   backend
+    Scaffold a backend project with optional flags for customization.
+
+```bash
+sersi create backend [flags]
+```
+
+Available Flags for `backend`:
+
+| Flag        | Type   | Description                              | Optional |
+| ----------- | ------ | ---------------------------------------- | -------- |
+| --name      | string | Name of the project                      | Yes      |
+| --lang      | string | Language to use (ts, nodejs, go, python) | Yes      |
+| --framework | string | Framework to use (fastapi, express, gin) | Yes      |
+| --database  | string | Database to use (postgres, mongodb)      | Yes      |
+
+Example:
+
+```bash
+sersi create backend --name my-backend --framework fastapi --database postgresql --lang py
+```
+
+-   frontend
+    Scaffold a frontend project with optional flags for customization.
+
+```bash
+sersi create frontend [flags]
+```
+
+Available Flags for `frontend`:
 
 | Flag        | Type   | Description                                    | Optional |
 | ----------- | ------ | ---------------------------------------------- | -------- |
@@ -41,85 +70,80 @@ sersi build -f path/to/sersi.yaml
 
 ```yaml
 name: sersi-app
+structure: polyrepos
 scaffold:
-  frontend:
-    framework: react
-  css: tailwind
-  language: typescript
-  opts:
-    - material-ui
-    - prettier
+    frontend:
+        framework: react
+        css: tailwind
+        language: typescript
+    backend:
+        language: go
+        framework: gin
+        database: postgresql
 ```
 
 ## 📄 YAML Reference
 
-These are the currently supported values for each field in `sersi.yaml`:
+These are the currently supported values for each flag & field in `sersi.yaml`:
 
 ### `frontend`
 
 #### `framework`
 
-- `react`
-- `svelte`
-- `vue`
-- `vanilla`
+-   `react`
+-   `svelte`
+-   `vue`
+-   `vanilla`
 
 #### `css`
 
-- `tailwind`
-- `bootstrap`
-- `css`
+-   `tailwind`
+-   `bootstrap`
+-   `css`
 
 #### `language`
 
-- `typescript` or `ts`
-- `javascript` or `js`
+-   `typescript` or `ts`
+-   `javascript` or `js`
 
 #### `opts`
 
 A list of additional tooling or UI frameworks. Supported:
 
-- `material-ui`
-- `prettier`
-
-## 🔐 Extended YAML Options [Sersi Pro](https://sersi.dev/pro)
-
-In addition to standard fields, Sersi Pro supports:
+-   `material-ui`
+-   `prettier`
 
 ### `backend`
 
 #### `language`
 
-- `typescript` or `ts`
-- `javascript` or `js`
-- `go`
+-   `typescript` or `ts`
+-   `javascript` or `js`
+-   `go`
+-   `python`
 
 #### `framework`
 
-- `deno`
-- `express`
-- `gin` (Go)
+-   `express`
+-   `gin` (Go)
+-   `chi` (Go)
+-   `fastapi` (Python)
 
 #### `database`
 
-- `postgres`
-- `sqlite`
-- `mongodb`
+-   `postgres`
+-   `mongodb`
 
 ### `devops`
 
 #### `docker`
 
-- `true` or `false`
+-   `true` or `false`
 
 #### `cicd`
 
-- `github-actions`
-- `gitlab`
-
-#### `monitoring`
-
-- `prometheus`
+-   `github`
+-   `gitlabci`
 
 3. version
    Show the version of the CLI.
@@ -138,5 +162,5 @@ sersi help create
 
 ## 🗒 Notes
 
-- Frameworks and languages must be among the supported options.
-- You can always override parts of a YAML config with flags when using build.
+-   Frameworks and languages must be among the supported options.
+-   You can always override parts of a YAML config with flags when using build.
