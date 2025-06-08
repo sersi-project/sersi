@@ -7,37 +7,37 @@ We welcome community involvement in improving the CLI and building the ecosystem
 
 ## 🧱 Project Structure Overview
 
-core/
-├── src/
-│ ├── cmd/
+sersi/
+├── cmd/
+│ ├── core/
 │ │ ├── build/
 │ │ ├── create/
-│ │ └── version/
-│ ├── common/
-│ ├── core/
-│ ├── docs/
-│ ├── tea/
+│ │ └── version/  
+│ └── pro/
+│ ├── hooks/
 │ ├── templates/
-│ ├── test/
-│ ├── utils/
-│ └── validator/
-├── go.mod
-├── go.sum
-├── main.go
-├── README.md
-├── LICENSE
-├── .gitignore
-└── .prettierrc
-
----
+│ └── login/  
+├── common/
+├── docs/
+├── internal/
+│ ├── render/
+│ ├── scaffold/
+│ │ ├── backend/
+│ │ ├── frontend/
+│ │ └── devops/
+│ └── tui/
+│ ├── menuinput/
+│ └── textinput/
+├── pkg/
+└── test/
 
 ## 🛠️ Getting Started
 
 ### 1. Fork the Repository
 
 ````bash
-git clone https://github.com/YOUR_USERNAME/sersi-cli
-cd sersi-cli
+git clone https://github.com/sersi-project/sersi
+cd sersi
 
 ### 2. Install Dependencies
 Ensure you have Go 1.20+
@@ -63,32 +63,32 @@ sersi <command> <flags>
 
 ## 🔁 Contribution Flow
 
-- Create a feature branch: `feat/your-feature-name`
-- Commit using clear messages (feat:, fix:, docs:)
-- Open a PR against main with a description of what you're solving or adding.
-- Add screenshots or code samples if relevant.
-- One of the maintainers will review your PR.
+-   Create a feature branch: `feat/your-feature-name`
+-   Commit using clear messages (feat:, fix:, docs:)
+-   Open a PR against main with a description of what you're solving or adding.
+-   Add screenshots or code samples if relevant.
+-   One of the maintainers will review your PR.
 
 ## 📦 Adding Templates or Languages
 
-- New frameworks go in `templates/frontend/`
-- CSS options go in `templates/css/`
-- Base shared logic in `templates/common/`
-- Make sure they support both TypeScript and JavaScript unless otherwise scoped.
+-   New frameworks go in `templates/frontend/`
+-   CSS options go in `templates/css/`
+-   Base shared logic in `templates/common/`
+-   Make sure they support both TypeScript and JavaScript unless otherwise scoped.
 
 ## 📝 Documentation
 
-- Update `docs/` with new features
-- Add examples to `examples/`
-- Keep README updated with latest info
+-   Update `docs/` with new features
+-   Add examples to `examples/`
+-   Keep README updated with latest info
 
 ## 💬 Communication
 
 For questions, ideas, or larger contributions, feel free to:
 
-- Open an issue
-- Start a discussion
-- Join our Discord (link coming soon)
+-   Open an issue
+-   Start a discussion
+-   Join our Discord (link coming soon)
 
 ## 🧾 License
 

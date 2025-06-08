@@ -6,4 +6,12 @@ scaffold:
     frontend:
         framework: "react"
         css: "tailwind"
-        lang: "typescript"
+        lang: "js"
+    backend:
+        lang: "js"
+        framework: "express"
+        database: "postgresql"
+    devops:
+        ci: "github"
+        docker: true
+        monitoring: "prometheus"

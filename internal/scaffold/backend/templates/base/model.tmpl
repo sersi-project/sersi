@@ -1,0 +1,51 @@
+{{- if eq .Language "js" }}
+class DummyDB {
+    constructor() {
+        this.users = [
+            {
+                name: "John Doe",
+                email: "john@doe.com"
+            },
+            {
+                name: "Jane Doe",
+                email: "jane@doe.com"
+            }
+        ];
+    }
+    findAll() {
+        return this.users;
+    }
+
+    create(user) {
+        this.users.push(user);
+        return user;
+    }
+
+    update(user) {
+        const index = this.users.findIndex(u => u.email === user.email);
+        if (index !== -1) {
+            this.users[index] = user;
+        }
+        return user;
+    }
+
+    delete(user) {
+        const index = this.users.findIndex(u => u.email === user.email);
+        if (index !== -1) {
+            this.users.splice(index, 1);
+        }
+        return user;
+    }
+}
+
+export default DummyDB;
+{{- end }}
+{{- if eq .Language "go" }}
+package model
+
+type User struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+{{- end }}

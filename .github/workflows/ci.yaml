@@ -35,9 +35,13 @@ jobs:
             - name: Run lint
               run: golint ./...
 
+            - name: Run Tests
+              run: go test ./...
+
             - name: Build CLI
               run: |
                   mkdir -p build
+                  go mod tidy
                   go build -o build/sersi .
 
             - name: Clean up
