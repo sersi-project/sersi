@@ -8,7 +8,7 @@ runs:
     steps:
         - uses: actions/setup-go@v5
           with:
-              go-version: { { inputs.version } }
+              go-version: ${{ inputs.version }}
         - run: |
               go mod tidy
               go build -o bin/sersi
