@@ -1,0 +1,23 @@
+name: PR
+
+on:
+    pull_request:
+        branches: [main]
+        paths:
+            - "internal/*"
+            - "pkg/*"
+            - "cmd/*"
+            - ".github/workflows/ci.yaml"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: .github/actions/build-binaries
+              with:
+                  version: "1.23.4"
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: build-${{github.sha}}
+                  path: bin/sersi

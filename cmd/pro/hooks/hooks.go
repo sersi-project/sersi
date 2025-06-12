@@ -1,4 +1,4 @@
-package hookscmd
+package hooks
 
 import (
 	"github.com/sersi-project/sersi/common"

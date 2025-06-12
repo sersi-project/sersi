@@ -9,9 +9,9 @@ import (
 	"github.com/sersi-project/sersi/cmd/core/build"
 	"github.com/sersi-project/sersi/cmd/core/create"
 	"github.com/sersi-project/sersi/cmd/core/version"
+	"github.com/sersi-project/sersi/cmd/pro/auth"
 	hookscmd "github.com/sersi-project/sersi/cmd/pro/hooks"
-	logincmd "github.com/sersi-project/sersi/cmd/pro/login"
-	templatescmd "github.com/sersi-project/sersi/cmd/pro/templates"
+	scaffoldcmd "github.com/sersi-project/sersi/cmd/pro/scaffolds"
 	"github.com/spf13/cobra"
 )
 
@@ -34,8 +34,8 @@ func addSubcommand() {
 	rootCmd.AddCommand(build.BuildCmd)
 	rootCmd.AddCommand(version.VersionCmd)
 	rootCmd.AddCommand(hookscmd.HooksCmd)
-	rootCmd.AddCommand(logincmd.LoginCmd)
-	rootCmd.AddCommand(templatescmd.TemplatesCmd)
+	rootCmd.AddCommand(auth.AuthCmd)
+	rootCmd.AddCommand(scaffoldcmd.ScaffoldCmd)
 }
 
 func init() {
