@@ -1,6 +1,8 @@
 name: PR
 
 on:
+    push:
+        branches: [main]
     pull_request:
         branches: [main]
         paths:
@@ -24,5 +26,27 @@ jobs:
                   go test ./...
             - uses: actions/upload-artifact@v4
               with:
-                  name: build-${{github.sha}}
+                  name: build-${{github.event.pull_request.head.ref}}
                   path: bin/sersi
+    integration-tests:
+        if: github.event_name != 'pull_request'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: 1.23.4
+            - run: |
+                  go mod tidy
+                  echo "Integration tests not implemented yet"
+    release:
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: 1.23.4
+            - run: |
+                  go mod tidy
+                  echo "Release not implemented yet"
