@@ -1,7 +1,9 @@
-name: PR
+name: CI/CD Workflow
 
 on:
     push:
+        tags:
+            - "v*.*.*"
         branches: [main]
     pull_request:
         branches: [main]
@@ -9,7 +11,8 @@ on:
             - "internal/*"
             - "pkg/*"
             - "cmd/*"
-            - ".github/workflows/ci.yaml"
+            - ".github/workflows/cicd.yaml"
+            - "test/*"
     workflow_dispatch:
 
 jobs:
@@ -39,9 +42,9 @@ jobs:
                   go-version: 1.23.4
             - run: |
                   go mod tidy
-                  echo "Integration tests not implemented yet"
+                  ./test/integration-test.sh
     release:
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
         needs: integration-tests
         runs-on: ubuntu-latest
         steps:
