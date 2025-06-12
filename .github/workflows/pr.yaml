@@ -26,9 +26,10 @@ jobs:
                   go test ./...
             - uses: actions/upload-artifact@v4
               with:
-                  name: build-${{github.event.pull_request.head.ref}}
+                  name: build-${{github.event.pull_request.head.sha}}
                   path: bin/sersi
     integration-tests:
+        needs: build
         if: github.event_name != 'pull_request'
         runs-on: ubuntu-latest
         steps:
@@ -41,6 +42,7 @@ jobs:
                   echo "Integration tests not implemented yet"
     release:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        needs: integration-tests
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
