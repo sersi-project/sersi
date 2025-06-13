@@ -57,8 +57,12 @@ func main() {
 	}
 }
 {{- end }}
-{{- if eq .Language "python" }}
+{{- if eq .Language "py" }}
 {{- if eq .Framework "fastapi" }}
+from fastapi import FastAPI
+from routers.router import router
 
+app = FastAPI()
+app.include_router(router)
 {{- end }}
 {{- end }}

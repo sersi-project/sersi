@@ -9,17 +9,17 @@ import (
 	"github.com/sersi-project/sersi/cmd/core/build"
 	"github.com/sersi-project/sersi/cmd/core/create"
 	"github.com/sersi-project/sersi/cmd/core/version"
+	"github.com/sersi-project/sersi/cmd/pro/auth"
 	hookscmd "github.com/sersi-project/sersi/cmd/pro/hooks"
-	logincmd "github.com/sersi-project/sersi/cmd/pro/login"
-	templatescmd "github.com/sersi-project/sersi/cmd/pro/templates"
+	scaffoldcmd "github.com/sersi-project/sersi/cmd/pro/scaffolds"
 	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "sersi",
-	Short: "A brief description of your application",
-	Long:  `A longer description that spans multiplr line`,
+	Short: "Sersi CLI - Scaffold and build your fullstack application",
+	Long:  `Sersi CLI - Scaffold and build your fullstack application`,
 }
 
 func Execute() {
@@ -34,12 +34,12 @@ func addSubcommand() {
 	rootCmd.AddCommand(build.BuildCmd)
 	rootCmd.AddCommand(version.VersionCmd)
 	rootCmd.AddCommand(hookscmd.HooksCmd)
-	rootCmd.AddCommand(logincmd.LoginCmd)
-	rootCmd.AddCommand(templatescmd.TemplatesCmd)
+	rootCmd.AddCommand(auth.AuthCmd)
+	rootCmd.AddCommand(scaffoldcmd.ScaffoldCmd)
 }
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	addSubcommand()
 }

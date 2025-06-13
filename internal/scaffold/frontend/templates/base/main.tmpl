@@ -1,6 +1,6 @@
 {{- if eq .Framework "svelte" }}
 import { mount } from 'svelte'
-import './app.css'
+import './styles.css'
 import App from './App.svelte'
 
 const app = mount(App, {
@@ -10,13 +10,13 @@ const app = mount(App, {
 export default app
 {{- else if eq .Framework "vue" }}
 import { createApp } from 'vue'
-import './style.css'
+import './styles.css'
 import App from './App.vue'
 
 createApp(App).mount('#app')
 {{- else if eq .Framework "vanilla" }}
-import './style.css'
-import javascriptLogo from './javascript.svg'
+import './styles.css'
+import javascriptLogo from './assets/javascript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.js'
 

@@ -4,12 +4,11 @@ var (
 	FrontendFrameworks      = []string{"react", "vue", "svelte", "vanilla"}
 	FrontendCSS             = []string{"css", "tailwind", "bootstrap"}
 	FrontendLanguages       = []string{"js", "ts", "javascript", "typescript"}
-	BackendLanguages        = []string{"go", "python", "node", "typescript", "py", "node-ts"}
+	BackendLanguages        = []string{"go", "python", "node", "js", "typescript", "py", "ts"}
 	BackendGoFrameworks     = []string{"chi", "gin"}
 	BackendPythonFrameworks = []string{"fastapi"}
 	BackendNodeFrameworks   = []string{"express", "fastify"}
-	DatabaseFrameworks      = []string{"postgresql", "mongodb"}
+	DatabaseFrameworks      = []string{"postgresql", "mongodb", "none"}
 	DevopsCI                = []string{"github", "gitlab", "bitbucket"}
 	DevopsDocker            = []string{"docker", "k8s"}
-	DevopsMonitoring        = []string{"prometheus", "grafana"}
 )

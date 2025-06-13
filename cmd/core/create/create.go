@@ -3,6 +3,7 @@ package create
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sersi-project/sersi/common"
@@ -19,8 +20,8 @@ var customSetup bool
 
 var CreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Genrate Scaffold Application",
-	Long:  `Genrate Scaffold Application with customizable options`,
+	Short: "Genrate Scaffold for Fullstack Application",
+	Long:  `Genrate Scaffold for Fullstack Application with customizable options- `,
 	Run:   RunCreate,
 }
 
@@ -93,13 +94,14 @@ func RunCreate(cmd *cobra.Command, args []string) {
 			stack = pn.(*menuinput.ListModel).Choice
 
 			indexOfStack := getIndexOfStack(stack, stackOpts)
-			if indexOfStack == -1 {
+			switch indexOfStack {
+			case -1:
 				fmt.Println("Invalid stack")
 				os.Exit(1)
-			} else if indexOfStack == 3 {
+			case 3:
 				fmt.Println("◉ Custom setup enabled")
 				customSetup = true
-			} else {
+			default:
 				preset = pkg.StackPresets[indexOfStack]
 				fmt.Println("◉ Stack: Selected")
 			}
@@ -161,17 +163,22 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 
 		backendLanguage := blm.(*menuinput.ListModel).Choice
+		backendLanguage = strings.ToLower(backendLanguage)
 
-		frameworkOpts := []string{}
-		if backendLanguage == "Go" {
+		var frameworkOpts []string
+		switch backendLanguage {
+		case "go":
 			frameworkOpts = pkg.BackendGoFrameworks
-		} else if backendLanguage == "Python" {
+		case "python", "py":
 			frameworkOpts = pkg.BackendPythonFrameworks
-		} else if backendLanguage == "Node" || backendLanguage == "TypeScript(Node)" {
+		case "node", "typescript(node)", "js", "ts", "typescript":
 			frameworkOpts = pkg.BackendNodeFrameworks
+		default:
+			fmt.Println("Error validating language: Invalid language")
+			os.Exit(1)
 		}
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Framework", frameworkOpts, "Backend Framework"))
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", frameworkOpts, "Backend Framework"))
 		bfm, err := tprogram.Run()
 		if err != nil {
 			fmt.Println("Error running program:", err)
@@ -286,13 +293,13 @@ func RunCreate(cmd *cobra.Command, args []string) {
 
 	if polyrepos {
 		frontendConfig := pkg.NewConfig(projectName, preset.Frontend, pkg.BackendConfig{}, pkg.DevopsConfig{})
-		if err := frontendConfig.GenerateSersiYaml(projectName); err != nil {
+		if err := frontendConfig.GenerateSersiYaml(projectName + "-frontend"); err != nil {
 			fmt.Println("Error creating sersi.yaml:", err)
 			os.Exit(1)
 		}
 
 		backendConfig := pkg.NewConfig(projectName, pkg.FrontendConfig{}, preset.Backend, pkg.DevopsConfig{})
-		if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
+		if err := backendConfig.GenerateSersiYaml(projectName + "-backend"); err != nil {
 			fmt.Println("Error creating sersi.yaml:", err)
 			os.Exit(1)
 		}

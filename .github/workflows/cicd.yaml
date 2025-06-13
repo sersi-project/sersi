@@ -1,0 +1,120 @@
+name: CI/CD Workflow
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+        branches: [main]
+
+    pull_request:
+        branches: [main]
+        paths:
+            - "internal/*"
+            - "pkg/*"
+            - "cmd/*"
+            - ".github/workflows/cicd.yaml"
+            - "test/*"
+
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: 1.23.4
+            - run: |
+                  go mod tidy
+                  go build -o bin/sersi
+                  go test ./...
+            - uses: golangci/golangci-lint-action@v8.0.0
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: build-${{github.event.pull_request.head.sha}}
+                  path: bin/sersi
+    integration-tests:
+        needs: build
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - command: frontend
+                      framework: react
+                      css: css
+                      lang: js
+                    - command: frontend
+                      framework: react
+                      css: tailwind
+                      lang: ts
+                    - command: frontend
+                      framework: vue
+                      css: bootstrap
+                      lang: js
+                    - command: frontend
+                      framework: vue
+                      css: tailwind
+                      lang: ts
+                    - command: frontend
+                      framework: svelte
+                      css: css
+                      lang: js
+                    - command: frontend
+                      framework: svelte
+                      css: bootstrap
+                      lang: ts
+                    - command: backend
+                      framework: gin
+                      lang: go
+                      database: none
+                    - command: backend
+                      framework: chi
+                      lang: go
+                      database: none
+                    - command: backend
+                      framework: fastapi
+                      lang: python
+                      database: none
+                    - command: backend
+                      framework: express
+                      lang: node
+                      database: none
+                    - command: backend
+                      framework: fastify
+                      lang: ts
+                      database: none
+        steps:
+            - uses: actions/checkout@v4
+
+            - run: docker build -t integration-test-${{ matrix.command }}-${{ matrix.framework }}-${{ matrix.css }}-${{ matrix.lang }} -f test/Dockerfile .
+              if: matrix.command == 'frontend'
+
+            - run: docker run --rm integration-test-${{ matrix.command }}-${{ matrix.framework }}-${{ matrix.css }}-${{ matrix.lang }} ${{ matrix.command }} ${{ matrix.framework }} ${{ matrix.css }} ${{ matrix.lang }}
+              if: matrix.command == 'frontend'
+
+            - run: docker build -t integration-test-${{ matrix.command }}-${{ matrix.lang }}-${{ matrix.framework }}-${{ matrix.database }} -f test/Dockerfile .
+              if: matrix.command == 'backend'
+
+            - run: docker run --rm integration-test-${{ matrix.command }}-${{ matrix.lang }}-${{ matrix.framework }}-${{ matrix.database }} ${{ matrix.command }} ${{ matrix.lang }} ${{ matrix.framework }} ${{ matrix.database }}
+              if: matrix.command == 'backend'
+    release:
+        if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
+        needs: integration-tests
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: stable
+            - uses: go-semantic-release/action@v1
+              with:
+                  hooks: goreleaser
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

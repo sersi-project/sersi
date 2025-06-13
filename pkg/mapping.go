@@ -14,6 +14,7 @@ type FileParser struct {
 
 type Config struct {
 	Name      string         `yaml:"name"`
+	Hooks     HooksConfig    `yaml:"hooks"`
 	Structure string         `yaml:"structure"`
 	Scaffold  ScaffoldConfig `yaml:"scaffold"`
 }
@@ -22,6 +23,11 @@ type ScaffoldConfig struct {
 	Frontend FrontendConfig `yaml:"frontend"`
 	Backend  BackendConfig  `yaml:"backend"`
 	Devops   DevopsConfig   `yaml:"devops"`
+}
+
+type HooksConfig struct {
+	PreHook  bool `yaml:"pre"`
+	PostHook bool `yaml:"post"`
 }
 
 type FrontendConfig struct {

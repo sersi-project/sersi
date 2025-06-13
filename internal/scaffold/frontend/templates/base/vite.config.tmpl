@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 {{- if eq .Framework "vue" }}
 import vue from '@vitejs/plugin-vue'
 {{- else if eq .Framework "svelte" }}
-import svelte from '@sveltejs/vite-plugin-svelte'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 {{- else if eq .Framework "react" }}
 import react from '@vitejs/plugin-react'
 {{- end }}

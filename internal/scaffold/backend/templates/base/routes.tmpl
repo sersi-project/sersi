@@ -132,5 +132,26 @@ func NewRouter() *gin.Engine {
 
 	return router
 }
+{{- else if eq .Language "py" }}
+from fastapi import APIRouter
+from model.model import User
+from service.service import UserService
+router = APIRouter()
+
+@router.post("/")
+def create_user(user: User):
+    return UserService().create_user(user)
+
+@router.put("/")
+def update_user(user: User):
+    return UserService().update_user(user)
+
+@router.delete("/")
+def delete_user(user: User):
+    return UserService().delete_user(user)
+
+@router.get("/")
+def get_all_users():
+    return UserService().get_all_users()
 {{- end }}
 {{- end }}
