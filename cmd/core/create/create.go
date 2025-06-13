@@ -3,6 +3,7 @@ package create
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sersi-project/sersi/common"
@@ -162,14 +163,15 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 
 		backendLanguage := blm.(*menuinput.ListModel).Choice
+		backendLanguage = strings.ToLower(backendLanguage)
 
 		var frameworkOpts []string
 		switch backendLanguage {
-		case "Go":
+		case "go":
 			frameworkOpts = pkg.BackendGoFrameworks
-		case "Python":
+		case "python", "py":
 			frameworkOpts = pkg.BackendPythonFrameworks
-		case "Node", "TypeScript(Node)":
+		case "node", "typescript(node)", "js":
 			frameworkOpts = pkg.BackendNodeFrameworks
 		default:
 			fmt.Println("Error validating language: Invalid language")
