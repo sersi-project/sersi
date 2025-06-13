@@ -43,11 +43,9 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	//nolint:errcheck,gocritic
-	str := fmt.Sprintf("%s", i)
+	str := fmt.Sprintf("%s", i) //nolint
 
-	//nolint:errcheck,gocritic
-	fn := itemStyle.Render
+	fn := itemStyle.Render //nolint
 	if index == m.Index() {
 		fn = func(s ...string) string {
 			return selectedItemStyle.Render("(•)  " + strings.Join(s, " "))

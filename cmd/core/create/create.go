@@ -93,13 +93,14 @@ func RunCreate(cmd *cobra.Command, args []string) {
 			stack = pn.(*menuinput.ListModel).Choice
 
 			indexOfStack := getIndexOfStack(stack, stackOpts)
-			if indexOfStack == -1 {
+			switch indexOfStack {
+			case -1:
 				fmt.Println("Invalid stack")
 				os.Exit(1)
-			} else if indexOfStack == 3 {
+			case 3:
 				fmt.Println("◉ Custom setup enabled")
 				customSetup = true
-			} else {
+			default:
 				preset = pkg.StackPresets[indexOfStack]
 				fmt.Println("◉ Stack: Selected")
 			}
@@ -162,13 +163,17 @@ func RunCreate(cmd *cobra.Command, args []string) {
 
 		backendLanguage := blm.(*menuinput.ListModel).Choice
 
-		frameworkOpts := []string{}
-		if backendLanguage == "Go" {
+		var frameworkOpts []string
+		switch backendLanguage {
+		case "Go":
 			frameworkOpts = pkg.BackendGoFrameworks
-		} else if backendLanguage == "Python" {
+		case "Python":
 			frameworkOpts = pkg.BackendPythonFrameworks
-		} else if backendLanguage == "Node" || backendLanguage == "TypeScript(Node)" {
+		case "Node", "TypeScript(Node)":
 			frameworkOpts = pkg.BackendNodeFrameworks
+		default:
+			fmt.Println("Error validating language: Invalid language")
+			os.Exit(1)
 		}
 
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Framework", frameworkOpts, "Backend Framework"))

@@ -114,28 +114,29 @@ func (b *Backend) createFolders() error {
 		return fmt.Errorf("failed to create project directory: %w", err)
 	}
 
-	if b.Language == "js" || b.Language == "ts" {
+	switch b.Language {
+	case "js", "ts":
 		for _, folder := range archJS {
 			err := pkg.CreateDirectory(filepath.Join(projectPath, folder))
 			if err != nil {
 				return fmt.Errorf("failed to create app directory: %w", err)
 			}
 		}
-	} else if b.Language == "go" {
+	case "go":
 		for _, folder := range archGo {
 			err := pkg.CreateDirectory(filepath.Join(projectPath, folder))
 			if err != nil {
 				return fmt.Errorf("failed to create app directory: %w", err)
 			}
 		}
-	} else if b.Language == "py" {
+	case "py":
 		for _, folder := range archPython {
 			err := pkg.CreateDirectory(filepath.Join(projectPath, folder))
 			if err != nil {
 				return fmt.Errorf("failed to create app directory: %w", err)
 			}
 		}
-	} else {
+	default:
 		return fmt.Errorf("unsupported language: %s", b.Language)
 	}
 
@@ -161,15 +162,16 @@ func (b *BackendBuilder) formatLanguage(language string) string {
 	}
 	language = strings.ToLower(language)
 
-	if language == "javascript" || language == "node" || language == "js" {
+	switch language {
+	case "javascript", "node", "js":
 		return "js"
-	} else if language == "typescript" || language == "ts" {
+	case "typescript", "ts":
 		return "ts"
-	} else if language == "python" || language == "py" {
+	case "python", "py":
 		return "py"
-	} else if language == "go" {
+	case "go":
 		return "go"
-	} else {
+	default:
 		return language
 	}
 }

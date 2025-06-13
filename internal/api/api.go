@@ -38,7 +38,8 @@ func (a *API) Authenticate(email, password string) (*types.APIAuth, error) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	res, err := a.client.Do(req)
-	defer req.Body.Close()
+
+	defer req.Body.Close() //nolint
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +68,7 @@ func (a *API) GetAllScaffolds() (*http.Response, error) {
 	}
 	req.Header.Set("Authorization", "Bearer "+config.Token)
 	res, err := a.client.Do(req)
-	defer req.Body.Close()
+	defer req.Body.Close() //nolint
 
 	if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (a *API) GetScaffold(name string) (*http.Response, error) {
 	}
 	req.Header.Set("Authorization", "Bearer "+config.Token)
 	res, err := a.client.Do(req)
-	defer req.Body.Close()
+	defer req.Body.Close() //nolint
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +122,7 @@ func (a *API) SaveScaffold(scaffold types.ScaffoldRequest) (*http.Response, erro
 	}
 	req.Header.Set("Authorization", "Bearer "+config.Token)
 	res, err := a.client.Do(req)
-	defer req.Body.Close()
+	defer req.Body.Close() //nolint
 	if err != nil {
 		return nil, err
 	}
