@@ -171,14 +171,14 @@ func RunCreate(cmd *cobra.Command, args []string) {
 			frameworkOpts = pkg.BackendGoFrameworks
 		case "python", "py":
 			frameworkOpts = pkg.BackendPythonFrameworks
-		case "node", "typescript(node)", "js":
+		case "node", "typescript(node)", "js", "ts", "typescript":
 			frameworkOpts = pkg.BackendNodeFrameworks
 		default:
 			fmt.Println("Error validating language: Invalid language")
 			os.Exit(1)
 		}
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Framework", frameworkOpts, "Backend Framework"))
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", frameworkOpts, "Backend Framework"))
 		bfm, err := tprogram.Run()
 		if err != nil {
 			fmt.Println("Error running program:", err)

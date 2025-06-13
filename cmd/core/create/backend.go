@@ -83,14 +83,15 @@ func RunBackend(cmd *cobra.Command, args []string) {
 	var opts []string
 
 	switch language {
-	case "Node", "Typescript(node)", "js", "ts":
+	case "Node", "Typescript(node)", "node", "js", "ts", "typescript":
 		opts = pkg.BackendNodeFrameworks
 	case "Go", "go":
 		opts = pkg.BackendGoFrameworks
-	case "Python", "python":
+	case "Python", "python", "py":
 		opts = pkg.BackendPythonFrameworks
 	default:
 		fmt.Println("Error validating language: Invalid language")
+		fmt.Println("Allowed languages:", pkg.BackendLanguages)
 		os.Exit(1)
 	}
 	var optsTitle []string
