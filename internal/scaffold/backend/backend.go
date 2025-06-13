@@ -16,9 +16,16 @@ var archJS = []string{
 	"services",
 }
 
-var archOther = []string{
+var archGo = []string{
 	"db",
 	"handlers",
+	"models",
+	"routes",
+	"services",
+}
+
+var archPython = []string{
+	"db",
 	"models",
 	"routes",
 	"services",
@@ -114,13 +121,22 @@ func (b *Backend) createFolders() error {
 				return fmt.Errorf("failed to create app directory: %w", err)
 			}
 		}
-	} else {
-		for _, folder := range archOther {
+	} else if b.Language == "go" {
+		for _, folder := range archGo {
 			err := pkg.CreateDirectory(filepath.Join(projectPath, folder))
 			if err != nil {
 				return fmt.Errorf("failed to create app directory: %w", err)
 			}
 		}
+	} else if b.Language == "py" {
+		for _, folder := range archPython {
+			err := pkg.CreateDirectory(filepath.Join(projectPath, folder))
+			if err != nil {
+				return fmt.Errorf("failed to create app directory: %w", err)
+			}
+		}
+	} else {
+		return fmt.Errorf("unsupported language: %s", b.Language)
 	}
 
 	template := NewBTemplateBuilder().
@@ -145,12 +161,14 @@ func (b *BackendBuilder) formatLanguage(language string) string {
 	}
 	language = strings.ToLower(language)
 
-	if language == "javascript" || language == "node" {
+	if language == "javascript" || language == "node" || language == "js" {
 		return "js"
 	} else if language == "typescript" || language == "ts" {
 		return "ts"
-	} else if language == "python" {
+	} else if language == "python" || language == "py" {
 		return "py"
+	} else if language == "go" {
+		return "go"
 	} else {
 		return language
 	}

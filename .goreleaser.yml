@@ -1,9 +1,4 @@
-version: 2
 project_name: sersi
-
-before:
-    hooks:
-        - go mod tidy
 
 builds:
     - main: ./main.go
@@ -30,8 +25,5 @@ archives:
             formats:
                 - zip
 
-release:
-    footer: "Copyright 2025 Sersi"
-
-universal_binaries:
-    - replace: true
+checksum:
+    name_template: "{{ .ProjectName }}_v{{ .Version }}_checksums.txt"

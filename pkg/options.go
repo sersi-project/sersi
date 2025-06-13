@@ -8,8 +8,7 @@ var (
 	BackendGoFrameworks     = []string{"chi", "gin"}
 	BackendPythonFrameworks = []string{"fastapi"}
 	BackendNodeFrameworks   = []string{"express", "fastify"}
-	DatabaseFrameworks      = []string{"postgresql", "mongodb"}
+	DatabaseFrameworks      = []string{"postgresql", "mongodb", "none"}
 	DevopsCI                = []string{"github", "gitlab", "bitbucket"}
 	DevopsDocker            = []string{"docker", "k8s"}
-	DevopsMonitoring        = []string{"prometheus", "grafana"}
 )

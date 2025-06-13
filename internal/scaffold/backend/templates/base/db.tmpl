@@ -69,5 +69,31 @@ func (d *DummyDB) Insert(user model.User) []model.User {
 
 {{- end }}
 {{- if eq .Language "python" }}
-
+class DummyDB:
+    def __init__(self):
+        self.users = [
+            {
+                "name": "John Doe",
+                "email": "john@doe.com"
+            },
+            {
+                "name": "Jane Doe",
+                "email": "jane@doe.com"
+            }
+        ]
+    def find_all(self):
+        return self.users
+    def insert(self, user):
+        self.users.append(user)
+        return user
+    def update(self, user):
+        for i, u in enumerate(self.users):
+            if u["email"] == user["email"]:
+                self.users[i] = user
+                return user
+    def delete(self, user):
+        for i, u in enumerate(self.users):
+            if u["email"] == user["email"]:
+                del self.users[i]
+                return user
 {{- end }}

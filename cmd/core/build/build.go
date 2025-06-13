@@ -24,7 +24,7 @@ var (
 var BuildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "Genrate Scaffold Application from a YAML file",
-	Long:  `Genrate Scaffold Application with customizable options`,
+	Long:  `Genrate Scaffold Application fromn a YAML file`,
 	Run:   RunBuild,
 }
 

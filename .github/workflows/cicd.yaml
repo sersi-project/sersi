@@ -5,6 +5,7 @@ on:
         tags:
             - "v*.*.*"
         branches: [main]
+
     pull_request:
         branches: [main]
         paths:
@@ -13,6 +14,7 @@ on:
             - "cmd/*"
             - ".github/workflows/cicd.yaml"
             - "test/*"
+
     workflow_dispatch:
 
 jobs:
@@ -33,16 +35,69 @@ jobs:
                   path: bin/sersi
     integration-tests:
         needs: build
-        if: github.event_name != 'pull_request' || github.event_name == 'workflow_dispatch'
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - command: frontend
+                      framework: react
+                      css: css
+                      lang: js
+                    - command: frontend
+                      framework: react
+                      css: tailwind
+                      lang: ts
+                    - command: frontend
+                      framework: vue
+                      css: bootstrap
+                      lang: js
+                    - command: frontend
+                      framework: vue
+                      css: tailwind
+                      lang: ts
+                    - command: frontend
+                      framework: svelte
+                      css: css
+                      lang: js
+                    - command: frontend
+                      framework: svelte
+                      css: bootstrap
+                      lang: ts
+                    - command: backend
+                      framework: gin
+                      lang: go
+                      database: none
+                    - command: backend
+                      framework: chi
+                      lang: go
+                      database: none
+                    - command: backend
+                      framework: fastapi
+                      lang: python
+                      database: none
+                    - command: backend
+                      framework: express
+                      lang: node
+                      database: none
+                    - command: backend
+                      framework: fastify
+                      lang: ts
+                      database: none
         steps:
             - uses: actions/checkout@v4
-            - uses: actions/setup-go@v5
-              with:
-                  go-version: 1.23.4
-            - run: |
-                  go mod tidy
-                  ./test/integration-test.sh
+
+            - run: docker build -t integration-test-${{ matrix.command }}-${{ matrix.framework }}-${{ matrix.css }}-${{ matrix.lang }} -f test/Dockerfile .
+              if: matrix.command == 'frontend'
+
+            - run: docker run --rm integration-test-${{ matrix.command }}-${{ matrix.framework }}-${{ matrix.css }}-${{ matrix.lang }} ${{ matrix.command }} ${{ matrix.framework }} ${{ matrix.css }} ${{ matrix.lang }}
+              if: matrix.command == 'frontend'
+
+            - run: docker build -t integration-test-${{ matrix.command }}-${{ matrix.lang }}-${{ matrix.framework }}-${{ matrix.database }} -f test/Dockerfile .
+              if: matrix.command == 'backend'
+
+            - run: docker run --rm integration-test-${{ matrix.command }}-${{ matrix.lang }}-${{ matrix.framework }}-${{ matrix.database }} ${{ matrix.command }} ${{ matrix.lang }} ${{ matrix.framework }} ${{ matrix.database }}
+              if: matrix.command == 'backend'
     release:
         if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
         needs: integration-tests
@@ -51,7 +106,9 @@ jobs:
             - uses: actions/checkout@v4
             - uses: actions/setup-go@v5
               with:
-                  go-version: 1.23.4
-            - run: |
-                  go mod tidy
-                  echo "Release not implemented yet"
+                  go-version: stable
+            - uses: go-semantic-release/action@v1
+              with:
+                  hooks: goreleaser
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

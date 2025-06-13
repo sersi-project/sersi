@@ -47,6 +47,7 @@ var goFiles = []BTemplateMap{
 	{"templates/base/model.tmpl", "models/model.go"},
 	{"templates/base/controller.tmpl", "handlers/handler.go"},
 	{"templates/base/db.tmpl", "db/dummy_db.go"},
+	{"templates/base/package.tmpl", "go.mod"},
 }
 
 var pyFiles = []BTemplateMap{
@@ -54,8 +55,8 @@ var pyFiles = []BTemplateMap{
 	{"templates/base/routes.tmpl", "routes/routes.py"},
 	{"templates/base/service.tmpl", "services/service.py"},
 	{"templates/base/model.tmpl", "models/model.py"},
-	{"templates/base/controller.tmpl", "handlers/handler.py"},
 	{"templates/base/db.tmpl", "db/dummy_db.py"},
+	{"templates/base/package.tmpl", "requirements.txt"},
 }
 
 type BTemplateBuilder struct {

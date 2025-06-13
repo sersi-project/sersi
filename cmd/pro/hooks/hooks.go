@@ -5,19 +5,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type action string
-
-const (
-	actionSave   action = "save"
-	actionView   action = "view"
-	actionUpdate action = "update"
-	actionDelete action = "delete"
-)
-
 var HooksCmd = &cobra.Command{
 	Use:   "hooks",
-	Short: "Show hooks of Sersi CLI",
-	Long:  `Show hooks of Sersi CLI`,
+	Short: "Custom hooks store actions for Sersi Pro (create, view, update, delete, use)",
+	Long:  `Custom hooks store actions for Sersi Pro (create, view, update, delete, use)`,
 	Run: func(cmd *cobra.Command, args []string) {
 		common.PrintLogo()
 	},
@@ -26,5 +17,5 @@ var HooksCmd = &cobra.Command{
 func init() {
 	HooksCmd.Flags().StringP("name", "n", "", "Name of project")
 	HooksCmd.Flags().StringP("file-path", "f", "", "File path of project")
-	HooksCmd.Flags().StringP("action", "a", "", "Action to perform (save, view, update, delete)")
+	HooksCmd.Flags().StringP("action", "a", "", "Action to perform (create, view, update, delete)")
 }

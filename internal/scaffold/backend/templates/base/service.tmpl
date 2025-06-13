@@ -96,4 +96,19 @@ func (s *Service) GetUser() []model.User {
 func (s *Service) CreateUser(user model.User) []model.User {
 	return s.dbClient.Insert(user)
 }
+{{- else if eq .Language "py" }}
+from db.dummy_db import DummyDB
+dummy_db = DummyDB()
+class UserService:
+    def create_user(self, user: dict):
+        return dummy_db.insert(user)
+
+    def update_user(self, user: dict):
+        return dummy_db.update(user)
+
+    def delete_user(self, user: dict):
+        return dummy_db.delete(user)
+
+    def get_all_users(self):
+        return dummy_db.find_all()
 {{- end }}

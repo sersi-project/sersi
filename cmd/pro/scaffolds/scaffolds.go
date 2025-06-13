@@ -13,8 +13,8 @@ import (
 
 var ScaffoldCmd = &cobra.Command{
 	Use:   "scaffold",
-	Short: "Show scaffold of Sersi CLI",
-	Long:  `Show scaffold of Sersi CLI`,
+	Short: "Scaffold store actions for Sersi Pro (create, view, update, delete, use)",
+	Long:  `Scaffold store actions for Sersi Pro (create, view, update, delete, use)`,
 	Run:   runScaffold,
 }
 

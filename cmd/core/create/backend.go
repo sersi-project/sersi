@@ -17,7 +17,7 @@ import (
 var BackendCmd = &cobra.Command{
 	Use:   "backend",
 	Short: "Create a new backend project",
-	Long:  `Create a new backend project with the given name`,
+	Long:  `Create a new backend project using Sersi Scaffold`,
 	Run:   RunBackend,
 }
 
@@ -52,7 +52,7 @@ func RunBackend(cmd *cobra.Command, args []string) {
 			os.Exit(0)
 		}
 
-		projectName = pn.(*textinput.Model).Value
+		projectName = pn.(textinput.Model).Value
 	}
 	if err := pkg.ValidateName(projectName); err != nil {
 		fmt.Println("Error validating project name:", err)
@@ -121,7 +121,13 @@ func RunBackend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
+
 		database = db.(*menuinput.ListModel).Choice
+		if database != "None" {
+			fmt.Println(common.ErrorStyle.Render("◉ Please note that this version does not currently support databases: defaulting to none"))
+			database = "none"
+		}
+
 		if database == "" {
 			os.Exit(0)
 		}
@@ -152,10 +158,6 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		Language:  language,
 		Database:  database,
 	}, pkg.DevopsConfig{})
-	if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
-		fmt.Println("Error creating sersi.yaml:", err)
-		os.Exit(1)
-	}
 
 	fmt.Printf("◉ %s\n", "Building...")
 	err := backend.Generate()
@@ -163,5 +165,11 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		fmt.Println("Error creating backend project:", err)
 		return
 	}
+
+	if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
+		fmt.Println("Error creating sersi.yaml:", err)
+		os.Exit(1)
+	}
+
 	fmt.Println("◉ Backend project created successfully")
 }

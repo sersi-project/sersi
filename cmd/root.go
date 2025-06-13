@@ -18,8 +18,8 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "sersi",
-	Short: "A brief description of your application",
-	Long:  `A longer description that spans multiplr line`,
+	Short: "Sersi CLI - Scaffold and build your fullstack application",
+	Long:  `Sersi CLI - Scaffold and build your fullstack application`,
 }
 
 func Execute() {
@@ -40,6 +40,6 @@ func addSubcommand() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	addSubcommand()
 }

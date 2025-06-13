@@ -19,8 +19,8 @@ var customSetup bool
 
 var CreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Genrate Scaffold Application",
-	Long:  `Genrate Scaffold Application with customizable options`,
+	Short: "Genrate Scaffold for Fullstack Application",
+	Long:  `Genrate Scaffold for Fullstack Application with customizable options- `,
 	Run:   RunCreate,
 }
 
@@ -286,13 +286,13 @@ func RunCreate(cmd *cobra.Command, args []string) {
 
 	if polyrepos {
 		frontendConfig := pkg.NewConfig(projectName, preset.Frontend, pkg.BackendConfig{}, pkg.DevopsConfig{})
-		if err := frontendConfig.GenerateSersiYaml(projectName); err != nil {
+		if err := frontendConfig.GenerateSersiYaml(projectName + "-frontend"); err != nil {
 			fmt.Println("Error creating sersi.yaml:", err)
 			os.Exit(1)
 		}
 
 		backendConfig := pkg.NewConfig(projectName, pkg.FrontendConfig{}, preset.Backend, pkg.DevopsConfig{})
-		if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
+		if err := backendConfig.GenerateSersiYaml(projectName + "-backend"); err != nil {
 			fmt.Println("Error creating sersi.yaml:", err)
 			os.Exit(1)
 		}
