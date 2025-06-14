@@ -103,7 +103,7 @@ jobs:
             - run: docker run --rm integration-test-${{ matrix.command }}-${{ matrix.lang }}-${{ matrix.framework }}-${{ matrix.database }} ${{ matrix.command }} ${{ matrix.lang }} ${{ matrix.framework }} ${{ matrix.database }}
               if: matrix.command == 'backend'
     release:
-        if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
+        if: github.event_name != 'pull_request'
         needs: integration-tests
         runs-on: ubuntu-latest
         permissions:
