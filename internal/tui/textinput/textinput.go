@@ -3,7 +3,6 @@ package textinput
 import (
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/sersi-project/sersi/internal/tui/styles"
 	"github.com/sersi-project/sersi/pkg"
@@ -98,9 +97,8 @@ func (m Model) View() string {
 		return fmt.Sprintf("\n%s\n", m.styles.Error.Render(m.err.Error()))
 	}
 
-	stepTitle := fmt.Sprintf("\nStep %s out of %s - %s", m.styles.StepNumber.Render(fmt.Sprintf("%d", m.step)), m.styles.StepTotal.Render(fmt.Sprintf("%d", m.totalSteps)), lipgloss.NewStyle().Bold(true).Render(m.header))
-	divider := dividerStyle.Render("---" + strings.Repeat("-", defaultWidth+10) + "---")
-	return lipgloss.JoinVertical(lipgloss.Left, stepTitle, divider, m.textInput.View(), "\n\n(esc to quit)\n")
+	stepTitle := fmt.Sprintf("\n%s [%s/%s]", lipgloss.NewStyle().Bold(true).Render(m.header), m.styles.StepNumber.Render(fmt.Sprintf("%d", m.step)), m.styles.StepTotal.Render(fmt.Sprintf("%d", m.totalSteps)))
+	return lipgloss.JoinVertical(lipgloss.Left, stepTitle, m.textInput.View(), "\n\n(esc to quit)\n")
 }
 
 func validateString(s string) error {

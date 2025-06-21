@@ -31,7 +31,7 @@ func init() {
 
 func RunBackend(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
-	fmt.Println("◉ Creating a new backend project...")
+	fmt.Printf("\n%s Creating a new backend project...\n", common.OperationLabel)
 
 	projectName, _ := cmd.Flags().GetString("name")
 	language, _ := cmd.Flags().GetString("lang")
@@ -44,7 +44,7 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		tprogram := tea.NewProgram(textinput.InitialModel(totalSteps, currentStep, "Project Name", "Enter project name"))
 		pn, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Printf("\n%s Error running program: %s\n", common.ErrorLabel, err)
 			os.Exit(1)
 		}
 
@@ -55,11 +55,11 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		projectName = pn.(textinput.Model).Value
 	}
 	if err := pkg.ValidateName(projectName); err != nil {
-		fmt.Println("Error validating project name:", err)
+		fmt.Printf("\n%s Error validating project name: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 	currentStep++
-	fmt.Printf("◉ %s\n", projectName)
+	fmt.Printf("\n ├── %s Project name successfully set to: %s\n", common.SuccessLabel, projectName)
 
 	if language == "" {
 		tprogram := tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Language", []string{"Node", "Typescript(node)", "Go", "Python"}, "Language"))
@@ -74,23 +74,23 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(language), pkg.BackendLanguages); err != nil {
-		fmt.Println("Error validating language:", err)
+		fmt.Printf("\n%s Error validating language: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 	currentStep++
-	fmt.Printf("◉ %s\n", language)
+	fmt.Printf(" │\n ├── %s Language successfully set to: %s\n", common.SuccessLabel, language)
 
 	var opts []string
 
 	switch language {
-	case "Node", "Typescript(node)", "node", "js", "ts", "typescript":
+	case "Node", "Typescript(node)", "node", "js", "ts", "typescript(node)", "typescript":
 		opts = pkg.BackendNodeFrameworks
 	case "Go", "go":
 		opts = pkg.BackendGoFrameworks
 	case "Python", "python", "py":
 		opts = pkg.BackendPythonFrameworks
 	default:
-		fmt.Println("Error validating language: Invalid language")
+		fmt.Printf("\n%s Error validating language: Invalid language\n", common.ErrorLabel)
 		fmt.Println("Allowed languages:", pkg.BackendLanguages)
 		os.Exit(1)
 	}
@@ -104,7 +104,7 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		tprogram := tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", optsTitle, "Framework"))
 		framem, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Printf("\n%s Error running program: %s\n", common.ErrorLabel, err)
 			os.Exit(1)
 		}
 		framework = framem.(*menuinput.ListModel).Choice
@@ -113,11 +113,11 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(framework), opts); err != nil {
-		fmt.Println("Error validating framework:", err)
+		fmt.Printf("\n%s Error validating framework: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 	currentStep++
-	fmt.Printf("◉ %s\n", framework)
+	fmt.Printf(" │\n ├── %s Framework successfully set to: %s\n", common.SuccessLabel, framework)
 
 	if database == "" {
 		tprogram := tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Database", []string{"PostgreSQL", "MongoDB", "None"}, "Database"))
@@ -129,7 +129,7 @@ func RunBackend(cmd *cobra.Command, args []string) {
 
 		database = db.(*menuinput.ListModel).Choice
 		if database != "None" {
-			fmt.Println(common.ErrorStyle.Render("◉ Please note that this version does not currently support databases: defaulting to none"))
+			fmt.Printf(" │\n ├── %s Please note that this version does not currently support databases: defaulting to none\n", common.OperationLabel)
 			database = "none"
 		}
 
@@ -138,14 +138,14 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(database), pkg.DatabaseFrameworks); err != nil {
-		fmt.Println("Error validating database:", err)
+		fmt.Printf("\n%s Error validating database: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("◉ %s\n", database)
+	fmt.Printf(" │\n ├── %s Database successfully set to: %s\n", common.SuccessLabel, database)
 
 	if dryRun {
-		fmt.Println("◉ Dry run enabled")
+		fmt.Printf(" │\n ├── %s Dry run enabled\n", common.SuccessLabel)
 		os.Exit(0)
 	}
 
@@ -164,17 +164,17 @@ func RunBackend(cmd *cobra.Command, args []string) {
 		Database:  database,
 	}, pkg.DevopsConfig{})
 
-	fmt.Printf("◉ %s\n", "Building...")
+	fmt.Printf("\n%s Building...\n", common.OperationLabel)
 	err := backend.Generate()
 	if err != nil {
-		fmt.Println("Error creating backend project:", err)
+		fmt.Printf("\n%s Error creating backend project: %s\n", common.ErrorLabel, err)
 		return
 	}
 
 	if err := backendConfig.GenerateSersiYaml(projectName); err != nil {
-		fmt.Println("Error creating sersi.yaml:", err)
+		fmt.Printf("\n%s Error creating sersi.yaml: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 
-	fmt.Println("◉ Backend project created successfully")
+	fmt.Printf(" │\n └── %s Backend project created successfully\n", common.SuccessLabel)
 }

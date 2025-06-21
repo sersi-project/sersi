@@ -6,6 +6,7 @@ package spinner
 import (
 	"fmt"
 
+	"github.com/sersi-project/sersi/common"
 	"github.com/sersi-project/sersi/internal/scaffold"
 	"github.com/sersi-project/sersi/internal/tui/styles"
 
@@ -79,7 +80,7 @@ func (m SpinnerModel) View() string {
 	}
 	str := fmt.Sprintf("%s Generating project...\n", m.spinner.View())
 	if m.quitting {
-		return fmt.Sprintf("◉ %s\n", buildStyle.Render("Created "+m.outputType+"..."))
+		return fmt.Sprintf("%s Created %s\n", common.SuccessLabel, m.outputType)
 	}
 	return str
 }

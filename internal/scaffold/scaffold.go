@@ -1,10 +1,6 @@
 package scaffold
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-
 	types "github.com/sersi-project/sersi/internal/types"
 
 	"github.com/sersi-project/sersi/internal/api"
@@ -30,7 +26,7 @@ func NewScaffoldService() *ScaffoldService {
 }
 
 func (s *ScaffoldService) SaveScaffold(config *pkg.Config) error {
-	res, err := s.client.SaveScaffold(types.ScaffoldRequest{
+	_, err := s.client.SaveScaffold(types.ScaffoldRequest{
 		Name:     config.Name,
 		Scaffold: config.Scaffold,
 	})
@@ -38,28 +34,24 @@ func (s *ScaffoldService) SaveScaffold(config *pkg.Config) error {
 		return err
 	}
 
-	if res.StatusCode != 200 {
-		return fmt.Errorf("error saving scaffold: %s", res.Status)
-	}
-
-	fmt.Println("Scaffold saved successfully")
 	return nil
 }
 
-func (s *ScaffoldService) GetAllScaffolds() error {
-	res, err := s.client.GetAllScaffolds()
+func (s *ScaffoldService) GetAllScaffolds() ([]pkg.Config, error) {
+	list, err := s.client.GetAllScaffolds()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var list []pkg.ScaffoldConfig
-	body, _ := io.ReadAll(res.Body)
-	err = json.Unmarshal(body, &list)
-	if err != nil {
-		return err
+	var configs []pkg.Config
+	for _, scaffold := range list {
+		configs = append(configs, pkg.Config{
+			Name:     scaffold.Name,
+			Scaffold: scaffold.Scaffold,
+		})
 	}
 
-	return nil
+	return configs, nil
 }
 
 func (s *ScaffoldService) GetScaffold(name string) (*pkg.Config, error) {
@@ -68,17 +60,26 @@ func (s *ScaffoldService) GetScaffold(name string) (*pkg.Config, error) {
 		return nil, err
 	}
 
-	var scaffold pkg.ScaffoldConfig
-	body, _ := io.ReadAll(res.Body)
-	err = json.Unmarshal(body, &scaffold)
+	return res, nil
+}
+
+func (s *ScaffoldService) UpdateScaffold(config *pkg.Config) error {
+	_, err := s.client.UpdateScaffold(types.ScaffoldRequest{
+		Name:     config.Name,
+		Scaffold: config.Scaffold,
+	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	config := &pkg.Config{
-		Scaffold: scaffold,
-		Name:     name,
+	return nil
+}
+
+func (s *ScaffoldService) DeleteScaffold(name string) error {
+	_, err := s.client.DeleteScaffold(name)
+	if err != nil {
+		return err
 	}
 
-	return config, nil
+	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/sersi-project/sersi/common"
 	"github.com/sersi-project/sersi/internal/tui/styles"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -145,11 +146,10 @@ func (m *ListModel) View() string {
 		return ""
 	}
 	if *m.Quitting {
-		return fmt.Sprintf("\n%s\n", m.styles.Cancel.Render("◉ Operation cancelled"))
+		return fmt.Sprintf("\n%s %s\n", common.OperationLabel, "Cancelled scaffolding operation")
 	}
-	stepTitle := fmt.Sprintf("\nStep %s out of %s - %s", m.styles.StepNumber.Render(fmt.Sprintf("%d", m.step)), m.styles.StepTotal.Render(fmt.Sprintf("%d", m.totalSteps)), titleStyle.Render(m.header))
-	divider := dividerStyle.Render("---" + strings.Repeat("-", defaultWidth+10) + "---")
+	stepTitle := fmt.Sprintf("\n%s [%s/%s]\n", titleStyle.Render(m.header), m.styles.StepNumber.Render(fmt.Sprintf("%d", m.step)), m.styles.StepTotal.Render(fmt.Sprintf("%d", m.totalSteps)))
 	listView := m.list.View()
 
-	return lipgloss.JoinVertical(lipgloss.Left, stepTitle, divider, listView)
+	return lipgloss.JoinVertical(lipgloss.Left, stepTitle, listView)
 }
