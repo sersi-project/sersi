@@ -1,6 +1,9 @@
 version: 2
 project_name: sersi
 
+env:
+    - SERSI_API_URL={{.Env.SERSI_API_URL}}
+
 builds:
     - main: ./main.go
       goos:
@@ -10,6 +13,9 @@ builds:
       goarch:
           - amd64
           - arm64
+      ldflags:
+          - -s -w -X github.com/sersi-project/sersi/common.Version=v{{ .Version }}
+          - -s -w -X github.com/sersi-project/sersi/common.Commit={{ .ShortCommit }}
 
     - ignore:
           - goos: windows

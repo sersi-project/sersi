@@ -1,4 +1,4 @@
-package structs
+package types
 
 import (
 	"github.com/sersi-project/sersi/pkg"
@@ -16,6 +16,11 @@ type APIAuthResponse struct {
 	Data    APIAuth `json:"data"`
 }
 
+type APIScaffoldsResponse struct {
+	Message string                `json:"message"`
+	Data    []GetScaffoldResponse `json:"data"`
+}
+
 type SaveScaffoldRequest struct {
 	Name     string             `json:"name"`
 	UserID   string             `json:"user_id"`
@@ -25,4 +30,13 @@ type SaveScaffoldRequest struct {
 type ScaffoldRequest struct {
 	Name     string             `json:"name"`
 	Scaffold pkg.ScaffoldConfig `json:"scaffold"`
+}
+
+type GetScaffoldResponse struct {
+	ID        int64              `json:"id"`
+	Name      string             `json:"name"`
+	Scaffold  pkg.ScaffoldConfig `json:"scaffold"`
+	UserID    string             `json:"user_id"`
+	CreatedAt string             `json:"created_at"`
+	UpdatedAt string             `json:"updated_at"`
 }

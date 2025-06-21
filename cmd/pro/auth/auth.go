@@ -5,6 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sersi-project/sersi/common"
 	"github.com/sersi-project/sersi/internal/authorization"
 	"github.com/sersi-project/sersi/internal/tui/logininput"
@@ -37,10 +38,10 @@ func runStatus(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
 	userID, ok := authorization.CheckStatus()
 	if ok {
-		fmt.Printf("You are logged in as %s\n", userID)
+		fmt.Printf("%s You are logged in as %s\n", common.SuccessLabel, lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(userID))
 		os.Exit(0)
 	}
-	fmt.Println("You are not logged in")
+	fmt.Println(common.ErrorLabel + " You are not logged in")
 	os.Exit(0)
 }
 
@@ -53,15 +54,19 @@ var loginCmd = &cobra.Command{
 
 func addLoginFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("email", "e", "", "Email")
-	cmd.Flags().StringP("password", "p", "", "Password")
+	cmd.Flags().BoolP("bypass-check", "b", false, "Bypass login check")
 }
 
 func runLogin(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
-	userID, ok := authorization.CheckStatus()
-	if ok {
-		fmt.Printf("You are already logged in as %s\n", userID)
-		os.Exit(0)
+
+	bypassCheck, _ := cmd.Flags().GetBool("bypass-check")
+	if !bypassCheck {
+		userID, ok := authorization.CheckStatus()
+		if ok {
+			fmt.Printf("%s You are already logged in as %s\n", common.SuccessLabel, lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(userID))
+			os.Exit(0)
+		}
 	}
 
 	var email, password string
@@ -73,7 +78,7 @@ func runLogin(cmd *cobra.Command, args []string) {
 		tprogram := tea.NewProgram(logininput.InitialModel())
 		pn, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		email = pn.(logininput.Model).Inputs[0].Value()
@@ -82,7 +87,9 @@ func runLogin(cmd *cobra.Command, args []string) {
 
 	err := authorization.Login(email, password)
 	if err != nil {
-		fmt.Println("Error logging in:", err)
+		fmt.Println(common.ErrorLabel+" Error logging in:", err)
 		os.Exit(1)
 	}
+
+	fmt.Println(common.SuccessLabel + " Logged in successfully")
 }

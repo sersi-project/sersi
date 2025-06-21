@@ -11,10 +11,10 @@ import (
 )
 
 type AuthConfig struct {
-	Token        string `json:"token"`
-	UserID       string `json:"user"`
+	Token        string `json:"access_token"`
+	UserID       string `json:"user_id"`
 	Email        string `json:"email"`
-	ExpiresAt    int64  `json:"expires_at"`
+	ExpiresIn    int64  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
 }
 
@@ -44,6 +44,12 @@ func CheckStatus() (userID string, ok bool) {
 		return
 	}
 
+	err = authConfig.AttemptRefresh()
+	if err != nil {
+		ok = false
+		return
+	}
+
 	userID = authConfig.UserID
 	ok = true
 	return
@@ -61,7 +67,7 @@ func Login(email, password string) error {
 		Token:        res.Token,
 		UserID:       res.UserID,
 		Email:        email,
-		ExpiresAt:    expiresAt,
+		ExpiresIn:    expiresAt,
 		RefreshToken: res.RefreshToken,
 	}
 
@@ -79,16 +85,34 @@ func Login(email, password string) error {
 }
 
 func (ac *AuthConfig) Validate() error {
-	if ac == nil {
+	if ac.Token == "" || ac.RefreshToken == "" || ac.UserID == "" || ac.Email == "" || ac.ExpiresIn == 0 {
 		return fmt.Errorf("config is not valid")
 	}
 
-	if ac.Token == "" || ac.RefreshToken == "" || ac.UserID == "" || ac.Email == "" || ac.ExpiresAt == 0 {
+	if ac.ExpiresIn+40800 < time.Now().Unix() {
 		return fmt.Errorf("config is not valid")
 	}
 
-	if ac.ExpiresAt < time.Now().Unix() {
-		return fmt.Errorf("expiry date passed")
+	return nil
+}
+
+func (ac *AuthConfig) AttemptRefresh() error {
+	if ac.ExpiresIn < time.Now().Unix() {
+		if ac.ExpiresIn+40800 < time.Now().Unix() {
+			return fmt.Errorf("config is not valid")
+		}
+		token, err := api.NewAPI().RefreshToken()
+		if err != nil {
+			return fmt.Errorf("error refreshing token: %v", err)
+		}
+		ac.Token = token.Token
+		ac.ExpiresIn = time.Now().Unix() + token.ExpiresIn
+		ac.RefreshToken = token.RefreshToken
+
+		err = ac.writeToConfig()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

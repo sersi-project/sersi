@@ -8,17 +8,9 @@ import (
 	"github.com/sersi-project/sersi/internal/scaffold"
 	"github.com/sersi-project/sersi/internal/scaffold/backend"
 	"github.com/sersi-project/sersi/internal/scaffold/frontend"
-	"github.com/sersi-project/sersi/internal/tui/spinner"
 	"github.com/sersi-project/sersi/pkg"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
-)
-
-var (
-	buildStyle = lipgloss.NewStyle().Italic(true)
-	greenStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#22CD24")).Italic(true)
 )
 
 var BuildCmd = &cobra.Command{
@@ -35,7 +27,7 @@ func init() {
 func RunBuild(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
 	filePath, _ := cmd.Flags().GetString("file")
-	fmt.Printf("◉ %s Creating a new project using %s:\n", buildStyle.Render("Building..."), filePath)
+	fmt.Printf(" %s Creating a new project using %s:\n", common.OperationLabel, filePath)
 
 	fileParser := pkg.NewFileParser(filePath)
 
@@ -63,21 +55,23 @@ func RunBuild(cmd *cobra.Command, args []string) {
 	// 	os.Exit(1)
 	// }
 
-	loading := tea.NewProgram(spinner.InitialSpinnerModel(pkg.GetProjectPath(fileParserResult.Name), "frontend", frontend))
-	_, err = loading.Run()
+	fmt.Printf("\n %s Generating frontend...\n", common.OperationLabel)
+	err = frontend.Generate()
 	if err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("Error generating frontend:", err)
 		os.Exit(1)
 	}
+	fmt.Printf("\n ├── %s Frontend generated successfully\n", common.SuccessLabel)
 
-	loading = tea.NewProgram(spinner.InitialSpinnerModel(pkg.GetProjectPath(fileParserResult.Name), "backend", backend))
-	_, err = loading.Run()
+	fmt.Printf("\n %s Generating backend...\n", common.OperationLabel)
+	err = backend.Generate()
 	if err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("Error generating backend:", err)
 		os.Exit(1)
 	}
+	fmt.Printf("\n ├── %s Backend generated successfully\n", common.SuccessLabel)
 
-	fmt.Printf("◉ %s scaffolded successfully!\n\nHappy Coding :)\n", greenStyle.Render(fileParserResult.Name))
+	fmt.Printf("\n %s scaffolded successfully!\n\nHappy Coding :)\n", common.SuccessLabel)
 }
 
 func buildFrontend(fileParserResult *pkg.Config) (scaffold.Scaffold, error) {

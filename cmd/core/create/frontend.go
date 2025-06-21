@@ -33,7 +33,7 @@ func init() {
 
 func RunFrontend(cmd *cobra.Command, args []string) {
 	common.PrintLogo()
-	fmt.Println("◉ Creating a new frontend project...")
+	fmt.Printf("%s Creating a new frontend project...\n", common.OperationLabel)
 	projectName, _ := cmd.Flags().GetString("name")
 	framework, _ := cmd.Flags().GetString("framework")
 	css, _ := cmd.Flags().GetString("css")
@@ -49,7 +49,7 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 			fmt.Println("Error running program:", err)
 			os.Exit(1)
 		}
-		if *pn.(*textinput.Model).Quitting {
+		if *pn.(textinput.Model).Quitting {
 			os.Exit(0)
 		}
 		projectName = pn.(textinput.Model).Value
@@ -60,7 +60,7 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 	}
 
 	currentStep++
-	fmt.Printf("◉ %s\n", projectName)
+	fmt.Printf("\n ├── %s Project name successfully set to: %s\n", common.SuccessLabel, projectName)
 
 	if framework == "" {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend Framework", []string{"React", "Svelte", "Vanilla", "Vue"}, "Framework"))
@@ -78,19 +78,19 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(framework), pkg.FrontendFrameworks); err != nil {
-		fmt.Println("Error validating framework:", err)
+		fmt.Printf(" │\n ├── %s Error validating framework: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 
 	currentStep++
 
-	fmt.Printf("◉ %s\n", framework)
+	fmt.Printf(" │\n ├── %s Framework successfully set to: %s\n", common.SuccessLabel, framework)
 
 	if css == "" {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend CSS", []string{"CSS", "Tailwind", "Bootstrap"}, "CSS"))
 		cssm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Printf(" │\n ├── %s Error running program: %s\n", common.ErrorLabel, err)
 			os.Exit(1)
 		}
 		if *cssm.(*menuinput.ListModel).Quitting {
@@ -102,11 +102,11 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(css), pkg.FrontendCSS); err != nil {
-		fmt.Println("Error validating CSS:", err)
+		fmt.Printf(" │\n ├── %s Error validating CSS: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 	currentStep++
-	fmt.Printf("◉ %s\n", css)
+	fmt.Printf(" │\n ├── %s CSS successfully set to: %s\n", common.SuccessLabel, css)
 
 	if lang == "" {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend Language", []string{"JavaScript", "TypeScript"}, "Language"))
@@ -124,14 +124,14 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		}
 	}
 	if err := pkg.ValidateOptions(strings.ToLower(lang), pkg.FrontendLanguages); err != nil {
-		fmt.Println("Error validating language:", err)
+		fmt.Printf(" │\n ├── %s Error validating language: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
-	fmt.Printf("◉ %s\n", lang)
+	fmt.Printf(" │\n ├── %s Language successfully set to: %s\n", common.SuccessLabel, lang)
 
 	dryRun, _ := cmd.Flags().GetBool("dry-run")
 	if dryRun {
-		fmt.Println("◉ Dry run enabled")
+		fmt.Printf(" │\n ├── %s Dry run enabled\n", common.SuccessLabel)
 		os.Exit(0)
 	}
 
@@ -144,10 +144,10 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		Polyrepos(false).
 		Build()
 
-	fmt.Printf("◉ %s\n", "Building...")
+	fmt.Printf("\n%s Building...\n", common.OperationLabel)
 	err := frontend.Generate()
 	if err != nil {
-		fmt.Println("Error creating frontend project:", err)
+		fmt.Printf("\n%s Error creating frontend project: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
 
@@ -157,8 +157,8 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		Language:  lang,
 	}, pkg.BackendConfig{}, pkg.DevopsConfig{})
 	if err := frontendConfig.GenerateSersiYaml(projectName); err != nil {
-		fmt.Println("Error creating sersi.yaml:", err)
+		fmt.Printf("\n%s Error creating sersi.yaml: %s\n", common.ErrorLabel, err)
 		os.Exit(1)
 	}
-	fmt.Printf("◉ %s\n", "Frontend project created successfully")
+	fmt.Printf(" │\n ├── %s Frontend project created successfully at %s\n", common.SuccessLabel, frontend.ProjectName)
 }

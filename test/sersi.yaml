@@ -1,4 +1,4 @@
-name: my-project
+name: my-project-4
 hooks:
     pre: true
     post: true

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sersi-project/sersi/common"
 	"github.com/sersi-project/sersi/internal/scaffold/backend"
 	"github.com/sersi-project/sersi/internal/scaffold/frontend"
@@ -39,7 +40,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 	totalSteps := 3
 	currentStep := 1
 	common.PrintLogo()
-	fmt.Println("◉ Creating a new full stack project...")
+	fmt.Printf("%s Creating a new full stack project...\n", common.OperationLabel)
 	preset := pkg.Preset{}
 
 	projectName, _ := cmd.Flags().GetString("name")
@@ -47,7 +48,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(textinput.InitialModel(totalSteps, currentStep, "Project Name", "Enter project name"))
 		pn, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 
@@ -66,11 +67,11 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 	}
 	currentStep++
-	fmt.Println("◉ Project name:", projectName)
+	fmt.Printf("\n ├── %s Project name successfully set to: %s\n", common.SuccessLabel, projectName)
 
 	customSetup, _ = cmd.Flags().GetBool("custom")
 	if customSetup {
-		fmt.Println("◉ Custom setup enabled")
+		fmt.Println(common.SuccessLabel + " Custom setup enabled")
 	} else {
 		stack, _ := cmd.Flags().GetString("stack")
 		stackOpts := []string{
@@ -81,10 +82,10 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 
 		if stack == "" {
-			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Stack", stackOpts, "Stack"))
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Choose Stack", stackOpts, "Stack"))
 			pn, err := tprogram.Run()
 			if err != nil {
-				fmt.Println("Error running program:", err)
+				fmt.Println(common.ErrorLabel+" Error running program:", err)
 				os.Exit(1)
 			}
 			if *pn.(*menuinput.ListModel).Quitting {
@@ -99,11 +100,11 @@ func RunCreate(cmd *cobra.Command, args []string) {
 				fmt.Println("Invalid stack")
 				os.Exit(1)
 			case 3:
-				fmt.Println("◉ Custom setup enabled")
+				fmt.Printf(" │\n └── %s Custom setup enabled\n", common.SuccessLabel)
 				customSetup = true
 			default:
 				preset = pkg.StackPresets[indexOfStack]
-				fmt.Println("◉ Stack: Selected")
+				fmt.Printf(" │\n └── %s Stack: Selected\n", common.SuccessLabel)
 			}
 		}
 	}
@@ -114,7 +115,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend Framework", []string{"React", "Vue", "Svelte", "Vanilla"}, "Frontend Framework"))
 		fm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *fm.(*menuinput.ListModel).Quitting {
@@ -126,7 +127,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend CSS", []string{"CSS", "Tailwind", "Bootstrap"}, "Frontend CSS"))
 		cssm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *cssm.(*menuinput.ListModel).Quitting {
@@ -138,7 +139,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend Language", []string{"Typescript", "Javascript"}, "Frontend Language"))
 		lm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *lm.(*menuinput.ListModel).Quitting {
@@ -148,14 +149,15 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		frontendLanguage := lm.(*menuinput.ListModel).Choice
 
 		currentStep++
-		fmt.Println("◉ Frontend Language:", frontendLanguage)
-		fmt.Println("◉ Frontend Framework:", frontendFramework)
-		fmt.Println("◉ Frontend CSS:", frontendCSS)
+		fmt.Printf("\n%s Configuring frontend...\n", common.OperationLabel)
+		fmt.Printf(" \n ├── %s Frontend Language: %s\n", common.SuccessLabel, frontendLanguage)
+		fmt.Printf(" │\n ├── %s Frontend Framework: %s\n", common.SuccessLabel, frontendFramework)
+		fmt.Printf(" │\n └── %s Frontend CSS: %s\n", common.SuccessLabel, frontendCSS)
 
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Language", []string{"Go", "Python", "Node", "TypeScript(Node)"}, "Backend Language"))
 		blm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *blm.(*menuinput.ListModel).Quitting {
@@ -174,14 +176,14 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		case "node", "typescript(node)", "js", "ts", "typescript":
 			frameworkOpts = pkg.BackendNodeFrameworks
 		default:
-			fmt.Println("Error validating language: Invalid language")
+			fmt.Println(common.ErrorLabel + " Error validating language: Invalid language")
 			os.Exit(1)
 		}
 
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", frameworkOpts, "Backend Framework"))
 		bfm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *bfm.(*menuinput.ListModel).Quitting {
@@ -193,7 +195,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Database", []string{"PostgreSQL", "MongoDB", "None"}, "Backend Database"))
 		bdm, err := tprogram.Run()
 		if err != nil {
-			fmt.Println("Error running program:", err)
+			fmt.Println(common.ErrorLabel+" Error running program:", err)
 			os.Exit(1)
 		}
 		if *bdm.(*menuinput.ListModel).Quitting {
@@ -202,9 +204,10 @@ func RunCreate(cmd *cobra.Command, args []string) {
 
 		backendDatabase := bdm.(*menuinput.ListModel).Choice
 		currentStep++
-		fmt.Println("◉ Backend Language:", backendLanguage)
-		fmt.Println("◉ Backend Framework:", backendFramework)
-		fmt.Println("◉ Backend Database:", backendDatabase)
+		fmt.Printf("\n%s Configuring backend...\n", common.OperationLabel)
+		fmt.Printf(" │\n ├── %s Backend Language: %s\n", common.SuccessLabel, backendLanguage)
+		fmt.Printf(" │\n ├── %s Backend Framework: %s\n", common.SuccessLabel, backendFramework)
+		fmt.Printf(" │\n └── %s Backend Database: %s\n", common.SuccessLabel, backendDatabase)
 
 		preset = pkg.Preset{
 			Frontend: pkg.FrontendConfig{
@@ -227,7 +230,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 	tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Project Structure", []string{"Monorepo", "Polyrepos"}, "Project Structure"))
 	projectStructure, err := tprogram.Run()
 	if err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println(common.ErrorLabel+" Error running program:", err)
 		os.Exit(1)
 	}
 	if *projectStructure.(*menuinput.ListModel).Quitting {
@@ -237,21 +240,28 @@ func RunCreate(cmd *cobra.Command, args []string) {
 	projectStructureChoice := projectStructure.(*menuinput.ListModel).Choice
 	monorepo := false
 	polyrepos := false
+
+	wd, _ := os.Getwd()
+	var frontendOutputPath, backendOutputPath string
 	if projectStructureChoice == "Monorepo" {
 		monorepo = true
+		frontendOutputPath = wd + "/" + projectName + "/frontend"
+		backendOutputPath = wd + "/" + projectName + "/backend"
 	}
 
 	if projectStructureChoice == "Polyrepos" {
 		polyrepos = true
+		frontendOutputPath = wd + "/" + projectName + "-frontend"
+		backendOutputPath = wd + "/" + projectName + "-backend"
 	}
 
 	dryRun, _ := cmd.Flags().GetBool("dry-run")
 	if dryRun {
-		fmt.Println("◉ Dry run enabled")
+		fmt.Println(common.OperationLabel + " Dry run enabled")
 		os.Exit(0)
 	}
 
-	fmt.Println("◉ Creating frontend project...")
+	fmt.Printf("\n%s Creating frontend project...\n", common.OperationLabel)
 
 	frontendScaffold := frontend.NewFrontendBuilder().
 		ProjectName(projectName).
@@ -267,7 +277,10 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Println("◉ Creating backend project...")
+	fmt.Printf(" \n └── %s Frontend\n", common.SuccessLabel)
+	fmt.Printf("     File created: %s\n", lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(frontendOutputPath))
+
+	fmt.Printf("\n%s Creating backend project...\n", common.OperationLabel)
 
 	backend := backend.NewBackendBuilder().
 		ProjectName(projectName).
@@ -279,9 +292,12 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		Build()
 
 	if err := backend.Generate(); err != nil {
-		fmt.Println("Error creating backend project:", err)
+		fmt.Println(common.ErrorLabel+" Error creating backend project:", err)
 		os.Exit(1)
 	}
+
+	fmt.Printf("\n └── %s Backend\n", common.SuccessLabel)
+	fmt.Printf("     File created: %s\n", lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(backendOutputPath))
 
 	if monorepo {
 		config := pkg.NewConfig(projectName, preset.Frontend, preset.Backend, pkg.DevopsConfig{})
@@ -305,7 +321,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	fmt.Printf("◉ %s created successfully\n", projectName)
+	fmt.Printf("\n%s Created project %s\n", common.SuccessLabel, projectName)
 }
 
 func getIndexOfStack(stack string, stackOpts []string) int {
