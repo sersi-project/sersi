@@ -1,9 +1,6 @@
 version: 2
 project_name: sersi
 
-env:
-    - SERSI_API_URL={{.Env.SERSI_API_URL}}
-
 builds:
     - id: sersi
       main: ./main.go

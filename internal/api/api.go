@@ -20,7 +20,11 @@ type API struct {
 }
 
 func NewAPI() *API {
-	url := os.Getenv("SERSI_API_URL")
+	url := os.Getenv("SERSI_API_BASE_URL")
+	if url != "http://localhost:8080/api/v1" {
+		url = "https://api.sersi.dev/api/v1"
+	}
+
 	return &API{
 		client:  &http.Client{},
 		baseURL: url,
