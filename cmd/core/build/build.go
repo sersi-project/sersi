@@ -10,13 +10,7 @@ import (
 	"github.com/sersi-project/sersi/internal/scaffold/frontend"
 	"github.com/sersi-project/sersi/pkg"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
-)
-
-var (
-	buildStyle = lipgloss.NewStyle().Italic(true)
-	greenStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#22CD24")).Italic(true)
 )
 
 var BuildCmd = &cobra.Command{

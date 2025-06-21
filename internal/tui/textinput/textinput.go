@@ -12,11 +12,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var (
-	defaultWidth = 20
-	dividerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-)
-
 type (
 	errMsg error
 )

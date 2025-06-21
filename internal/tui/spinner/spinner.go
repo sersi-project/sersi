@@ -15,8 +15,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var buildStyle = lipgloss.NewStyle().Italic(true)
-
 type errMsg error
 
 type CompletedMsg struct {

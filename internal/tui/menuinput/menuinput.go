@@ -23,7 +23,6 @@ type errMsg error
 var (
 	titleStyle        = lipgloss.NewStyle().Bold(true)
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(1)
-	dividerStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("#cd24cd"))
 	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(1)
 	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(1).PaddingBottom(1)
