@@ -16,7 +16,7 @@ brew install sersi
 ### Option 2: Install via Scoop (Windows)
 
 ```bash
-scoop bucket add sersi-project
+scoop bucket add sersi https://github.com/sersi-project/scoop-sersi
 scoop install sersi
 ```
 

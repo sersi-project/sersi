@@ -30,10 +30,14 @@ Sersi is available on homebrew, scoop and npm.
 ```bash
 brew tap sersi-project/sersi
 brew install sersi
+
 # or
-scoop bucket add sersi-project
+
+scoop bucket add sersi https://github.com/sersi-project/scoop-sersi
 scoop install sersi
+
 # or
+
 npx sersi@lateset <command>
 ```
 
