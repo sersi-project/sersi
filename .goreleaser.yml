@@ -5,7 +5,8 @@ env:
     - SERSI_API_URL={{.Env.SERSI_API_URL}}
 
 builds:
-    - main: ./main.go
+    - id: sersi
+      main: ./main.go
       goos:
           - linux
           - windows
@@ -17,7 +18,7 @@ builds:
           - -s -w -X github.com/sersi-project/sersi/common.Version=v{{ .Version }}
           - -s -w -X github.com/sersi-project/sersi/common.Commit={{ .ShortCommit }}
 
-    - ignore:
+      ignore:
           - goos: windows
             goarch: arm64
           - goos: linux
