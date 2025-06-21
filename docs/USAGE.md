@@ -3,11 +3,13 @@
 ## 🚀 Commands
 
 1. create
-   Generate a new project with optional flags for customization.
+   Generate a new full stack project with optional flags for customization.
 
 ```bash
-sersi create [flags]
+sersi create
 ```
+
+this generates a wizard to create a full stack application. If you would like to create either a frontend or just a backend, use the subcommands below.
 
 ### subcommands:
 
@@ -52,7 +54,7 @@ Available Flags for `frontend`:
 Example:
 
 ```bash
-sersi create --name my-site --framework vue --css bootstrap --lang js
+sersi create frontend --name my-site --framework vue --css bootstrap --lang js
 ```
 
 2. build
@@ -106,13 +108,6 @@ These are the currently supported values for each flag & field in `sersi.yaml`:
 -   `typescript` or `ts`
 -   `javascript` or `js`
 
-#### `opts`
-
-A list of additional tooling or UI frameworks. Supported:
-
--   `material-ui`
--   `prettier`
-
 ### `backend`
 
 #### `language`
@@ -131,19 +126,9 @@ A list of additional tooling or UI frameworks. Supported:
 
 #### `database`
 
--   `postgres`
--   `mongodb`
-
-### `devops`
-
-#### `docker`
-
--   `true` or `false`
-
-#### `cicd`
-
--   `github`
--   `gitlabci`
+- `postgres` (coming soon)
+- `mongodb` (coming soon)
+-   `none`
 
 3. version
    Show the version of the CLI.

@@ -1,0 +1,31 @@
+COMMERCIAL LICENSE AGREEMENT
+
+This Commercial License Agreement ("Agreement") is between [Your Company Name], ("Licensor") and the Licensee ("You").
+
+1. LICENSE GRANT  
+Licensor grants You a non-exclusive, non-transferable license to use the proprietary features of MyCLI (the "Licensed Features") as specified in your commercial license or subscription plan.
+
+2. RESTRICTIONS  
+You may NOT:
+- Copy, modify, distribute, or sublicense the Licensed Features beyond the scope of this license.
+- Reverse engineer, decompile, or attempt to extract source code from the Licensed Features.
+- Use the Licensed Features for illegal or unauthorized purposes.
+
+3. FEES AND PAYMENT  
+Use of the Licensed Features requires payment of applicable fees as described in your purchase or subscription agreement.
+
+4. TERM AND TERMINATION  
+This license is effective until terminated. Licensor may terminate the license if You fail to comply with its terms. Upon termination, You must cease all use of the Licensed Features.
+
+5. WARRANTY DISCLAIMER  
+The Licensed Features are provided "AS IS" without warranties of any kind, express or implied.
+
+6. LIMITATION OF LIABILITY  
+Licensor is not liable for any damages arising from use of the Licensed Features.
+
+7. CONTACT  
+For licensing inquiries or support, contact: knyamutsaka@outlook.com
+
+---
+
+By using the Licensed Features, You agree to the terms of this Agreement.

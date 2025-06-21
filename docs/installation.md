@@ -24,6 +24,8 @@ scoop install sersi
 
 ```bash
 npm install -g sersi
+#or
+npx sersi@latest
 ```
 
 ### Option 4: Download Prebuilt Binary (Windows, macOS, Linux)

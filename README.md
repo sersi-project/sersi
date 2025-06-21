@@ -34,7 +34,7 @@ brew install sersi
 scoop bucket add sersi-project
 scoop install sersi
 # or
-npm install -g sersi
+npx sersi@lateset <command>
 ```
 
 Check the full guide here → [Installation](./docs/installation.md)
@@ -52,7 +52,11 @@ Want to scaffold from a config file?
 sersi build -f /path/to/sersi.yaml
 ```
 
-Full docs → [Usage](./docs/USAGE.md)
+Full docs -> [Usage](./docs/USAGE.md)
+
+AND
+
+Configuration -> [Configuration](./docs/configuration.md)
 
 ## 🤝 Contributing
 
@@ -73,5 +77,5 @@ Learn more → [Pro Features](./docs/pro.md)
 ## 📄 License
 
 SERSI is free under the MIT License.
-Pro mode is made available under EULA.
-See LICENSE for full details.
+Pro mode is made available under Commercial License.
+See LICENSE & LICENSE-COMMERCIAL for full details.
