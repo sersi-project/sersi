@@ -4,36 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 {{- end }}
 {{- end }}
 {{- if eq .Framework "react" }}
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {{- template "main_component" . }}
     </>
   )
 }
@@ -43,85 +19,75 @@ export default App
 {{- if eq .CSS "bootstrap" }}
 import 'bootstrap/dist/css/bootstrap.min.css';
 {{- end }}
+
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
+
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+ {{- template "main_component" . }}
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
 </style>
 {{- else if eq .Framework "svelte" }}
 {{- if eq .CSS "bootstrap" }}
 import 'bootstrap/dist/css/bootstrap.min.css';
 {{- end }}
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
 </script>
 
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  {{- template "main_component" . }}
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
 </style>
+{{- end }}
+
+{{- define "main_component" }}
+{{- if eq .CSS "tailwind" }}
+    <div className="flex flex-col items-center justify-center h-screen bg-white">
+      <div className="bg-gray-800 border-4 border-gray-300 border-double text-white px-12 py-12 rounded-lg shadow-2xl flex flex-col space-y-4 hover:scale-115 transition-all duration-600">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold">
+            SERSI <code className="text-primary">Core</code>
+          </h1>
+          <a
+            href="https://sersi.dev"
+            className="underline italic text-center mt-3 text-sm"
+          >
+            https://sersi.dev
+          </a>
+        </div>
+        <p className="text-xl mt-2">
+          Your <span className="text-primary">Stack</span>, Your{" "}
+          <span className="text-accent">Rules</span>.
+        </p>
+        <pre className="bg-black/90 p-4 rounded-lg">
+          <code>Frontend: {{ .Framework }}, {{ .CSS }}, {{ .Language }}</code>
+        </pre>
+      </div>
+    </div>
+{{- else }}
+    <div className="container">
+      <div className="card">
+        <div className="card-header">
+          <h1 className="title">
+            SERSI <code className="highlight">Core</code>
+          </h1>
+          <a href="https://sersi.dev" className="link">
+            https://sersi.dev
+          </a>
+        </div>
+        <p className="subtitle">
+          Your <span className="highlight">Stack</span>, Your{" "}
+          <span className="accent">Rules</span>.
+        </p>
+        <pre className="code-block">
+          <code>Frontend: {{ .Framework }}, {{ .CSS }}, {{ .Language }}</code>
+        </pre>
+      </div>
+    </div>
+{{- end }}
 {{- end }}

@@ -19,6 +19,12 @@ type Config struct {
 	Scaffold  ScaffoldConfig `yaml:"scaffold"`
 }
 
+type SystemInfo struct {
+	OS   string `json:"os"`
+	Arch string `json:"arch"`
+	CPU  string `json:"cpu"`
+}
+
 type ScaffoldConfig struct {
 	Frontend FrontendConfig `yaml:"frontend"`
 	Backend  BackendConfig  `yaml:"backend"`

@@ -2,6 +2,7 @@ package devops
 
 import (
 	"embed"
+	"fmt"
 
 	"github.com/sersi-project/sersi/internal/scaffold"
 )
@@ -29,13 +30,13 @@ func (b *DTemplateBuilder) CI(ci string) *DTemplateBuilder {
 	return b
 }
 
-func (b *DTemplateBuilder) Docker(docker bool) *DTemplateBuilder {
-	b.dTemplate.Docker = docker
+func (b *DTemplateBuilder) Container(container string) *DTemplateBuilder {
+	b.dTemplate.Container = container
 	return b
 }
 
-func (b *DTemplateBuilder) Monitoring(monitoring string) *DTemplateBuilder {
-	b.dTemplate.Monitoring = monitoring
+func (b *DTemplateBuilder) Language(language string) *DTemplateBuilder {
+	b.dTemplate.Language = language
 	return b
 }
 
@@ -46,20 +47,23 @@ func (b *DTemplateBuilder) Build() *DTemplate {
 type DTemplate struct {
 	ProjectName string
 	CI          string
-	Docker      bool
-	Monitoring  string
+	Container   string
+	Language    string
 }
 
 func (t *DTemplate) Execute() error {
 	switch t.CI {
-	case "github":
+	case "github-actions":
 		return t.ExecuteGithub()
-	case "gitlab":
+	case "gitlab-ci":
 		return t.ExecuteGitlab()
 	case "circleci":
 		return t.ExecuteCircleci()
+	case "bitbucket-pipelines":
+		return t.ExecuteBitbucket()
+	default:
+		return t.ProcessError(fmt.Errorf("invalid CI provider"))
 	}
-	return nil
 }
 
 func (t *DTemplate) ProcessError(err error) error {
@@ -67,7 +71,7 @@ func (t *DTemplate) ProcessError(err error) error {
 }
 
 func (t *DTemplate) ExecuteGithub() error {
-	err := scaffold.RenderTemplate(t, templatesFolder, "templates/base/ci.tmpl", "/.github/workflows/ci.yml", t.ProjectName)
+	err := scaffold.RenderTemplate(t, templatesFolder, "templates/base/ci.tmpl", ".github/workflows/ci.yml", t.ProjectName)
 	if err != nil {
 		return err
 	}
@@ -86,6 +90,15 @@ func (t *DTemplate) ExecuteGitlab() error {
 
 func (t *DTemplate) ExecuteCircleci() error {
 	err := scaffold.RenderTemplate(t, templatesFolder, "templates/base/ci.tmpl", ".circleci/config.yml", t.ProjectName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *DTemplate) ExecuteBitbucket() error {
+	err := scaffold.RenderTemplate(t, templatesFolder, "templates/base/ci.tmpl", "bitbucket-pipelines.yml", t.ProjectName)
 	if err != nil {
 		return err
 	}

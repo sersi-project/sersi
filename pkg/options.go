@@ -9,6 +9,6 @@ var (
 	BackendPythonFrameworks = []string{"fastapi"}
 	BackendNodeFrameworks   = []string{"express", "fastify"}
 	DatabaseFrameworks      = []string{"postgresql", "mongodb", "none"}
-	DevopsCI                = []string{"github", "gitlab", "bitbucket"}
-	DevopsDocker            = []string{"docker", "k8s"}
+	DevopsCI                = []string{"github-actions", "gitlab-ci", "circleci", "bitbucket-pipelines"}
+	DevopsContainers        = []string{"docker", "k8s"}
 )

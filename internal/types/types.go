@@ -40,3 +40,11 @@ type GetScaffoldResponse struct {
 	CreatedAt string             `json:"created_at"`
 	UpdatedAt string             `json:"updated_at"`
 }
+
+type SendMetricsRequest struct {
+	UserID     string         `json:"user_id"`
+	Command    string         `json:"command"`
+	Success    bool           `json:"success"`
+	SystemInfo pkg.SystemInfo `json:"system_info"`
+	Duration   int64          `json:"duration"`
+}

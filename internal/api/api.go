@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	types "github.com/sersi-project/sersi/internal/types"
 	"github.com/sersi-project/sersi/pkg"
@@ -37,7 +38,7 @@ func (a *API) Authenticate(email, password string) (*types.APIAuth, error) {
 		"password": password,
 	})
 
-	req, err := http.NewRequest("POST", a.baseURL+"/auth/sign-in", bytes.NewReader(body))
+	req, err := http.NewRequest("POST", a.baseURL+"/auth/login", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -269,4 +270,41 @@ func getAuthConfig() (*types.APIAuth, error) {
 		return nil, err
 	}
 	return ac, nil
+}
+
+func (a *API) SendMetrics(command string, success bool, duration int64) error {
+	config, err := getAuthConfig()
+	if err != nil {
+		return err
+	}
+
+	metrics := types.SendMetricsRequest{
+		UserID:  config.UserID,
+		Command: command,
+		Success: success,
+		SystemInfo: pkg.SystemInfo{
+			OS:   runtime.GOOS,
+			Arch: runtime.GOARCH,
+			CPU:  runtime.GOARCH,
+		},
+		Duration: duration,
+	}
+
+	body, _ := json.Marshal(metrics)
+	req, err := http.NewRequest("POST", a.baseURL+"/metrics", bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+config.Token)
+	res, err := a.client.Do(req)
+	defer res.Body.Close() //nolint
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("error sending metrics: %s", res.Status)
+	}
+	return nil
 }

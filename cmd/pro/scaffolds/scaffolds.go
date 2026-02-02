@@ -43,6 +43,8 @@ func runScaffold(cmd *cobra.Command, args []string) {
 	action, _ := cmd.Flags().GetString("action")
 	filePath, _ := cmd.Flags().GetString("file-path")
 
+	success := false
+
 	switch action {
 	case "save":
 		if filePath == "" {
@@ -64,7 +66,7 @@ func runScaffold(cmd *cobra.Command, args []string) {
 		}
 
 		fmt.Printf("\n ├── %s Scaffold saved successfully", common.SuccessLabel)
-		os.Exit(0)
+		success = true
 	case "list":
 		fmt.Printf("\n%s Retreiving stored scaffolds..\n", common.OperationLabel)
 		var scaffoldNames []string
@@ -134,7 +136,7 @@ func runScaffold(cmd *cobra.Command, args []string) {
 			fmt.Printf("\n  ├── %s Backend generated successfully\n", common.SuccessLabel)
 			fmt.Printf("\n%s Scaffold generated successfully\n", common.SuccessLabel)
 		}
-		os.Exit(0)
+		success = true
 	case "use":
 		if name == "" {
 			fmt.Println("Please provide a scaffold name")
@@ -190,7 +192,7 @@ func runScaffold(cmd *cobra.Command, args []string) {
 		}
 
 		fmt.Printf("\n%s Scaffold %s used successfully\n", common.SuccessLabel, name)
-		os.Exit(0)
+		success = true
 	case "update":
 		if filePath == "" {
 			fmt.Printf("%s --file-path required to update template", common.ErrorLabel)
@@ -225,11 +227,17 @@ func runScaffold(cmd *cobra.Command, args []string) {
 			os.Exit(0)
 		}
 		fmt.Printf("\n  ├── %s Deleted scaffold - %s - successfully\n", common.SuccessLabel, name)
-		os.Exit(0)
+		success = true
 	default:
 		fmt.Printf("\n%s Invalid action \n", common.ErrorLabel)
 		fmt.Printf("Allow actions -> save, update, delete, list, use")
 		os.Exit(0)
+	}
+
+	if success {
+		os.Exit(0)
+	} else {
+		os.Exit(1)
 	}
 }
 

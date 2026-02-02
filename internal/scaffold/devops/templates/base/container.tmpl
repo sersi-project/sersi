@@ -1,0 +1,21 @@
+{{- if eq .Container "docker" }}
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+{{- else if eq .Container "docker-compose" }}
+version: '3.8'
+
+services:
+  app:
+    image: ubuntu:latest
+    container_name: {{ .ProjectName }}
+    ports:
+      - 8080:8080
+
+
+{{- end }}
+

@@ -88,7 +88,7 @@ For questions, ideas, or larger contributions, feel free to:
 
 -   Open an issue
 -   Start a discussion
--   Join our Discord (link coming soon)
+-   Join our [Discord](https://discord.gg/EhZfkG4xkP)
 
 ## 🧾 License
 

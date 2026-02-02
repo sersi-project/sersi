@@ -28,12 +28,11 @@ var tsFiles = []FTemplateMap{
 }
 
 var baseFiles = []FTemplateMap{
-	{"templates/base/index.html.tmpl", "index.html"},
-	{"templates/base/package.json.tmpl", "package.json"},
-	{"templates/base/README.md.tmpl", "README.md"},
-	{"templates/base/styles.css.tmpl", "src/styles.css"},
-	{"templates/base/.gitignore.tmpl", ".gitignore"},
-	{"templates/base/App.css.tmpl", "src/App.css"},
+	{"templates/base/index.tmpl", "index.html"},
+	{"templates/base/package.tmpl", "package.json"},
+	{"templates/base/README.tmpl", "README.md"},
+	{"templates/base/styles.tmpl", "src/styles.css"},
+	{"templates/base/gitignore.tmpl", ".gitignore"},
 }
 
 type FTemplateBuilder struct {

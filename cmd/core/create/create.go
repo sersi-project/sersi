@@ -47,14 +47,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 	if projectName == "" {
 		tprogram = tea.NewProgram(textinput.InitialModel(totalSteps, currentStep, "Project Name", "Enter project name"))
 		pn, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-
-		if *pn.(textinput.Model).Quitting {
-			os.Exit(0)
-		}
+		handleError(err, pn)
 
 		projectName = pn.(textinput.Model).Value
 		if err := pkg.ValidateName(projectName); err != nil {
@@ -84,13 +77,7 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		if stack == "" {
 			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Choose Stack", stackOpts, "Stack"))
 			pn, err := tprogram.Run()
-			if err != nil {
-				fmt.Println(common.ErrorLabel+" Error running program:", err)
-				os.Exit(1)
-			}
-			if *pn.(*menuinput.ListModel).Quitting {
-				os.Exit(0)
-			}
+			handleError(err, pn)
 
 			stack = pn.(*menuinput.ListModel).Choice
 
@@ -109,105 +96,96 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 	}
 
+	var applicationType string
+	var frontendFramework, frontendLanguage, frontendCSS string
+	var backendLanguage, backendFramework, backendDatabase string
+
 	if customSetup {
 		currentStep++
 		totalSteps += 2
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend Framework", []string{"React", "Vue", "Svelte", "Vanilla"}, "Frontend Framework"))
-		fm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *fm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
-		}
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Application Type", []string{"Frontend", "Backend", "Full Stack"}, "Application Type"))
+		am, err := tprogram.Run()
+		handleError(err, am)
 
-		frontendFramework := fm.(*menuinput.ListModel).Choice
+		applicationType = am.(*menuinput.ListModel).Choice
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend CSS", []string{"CSS", "Tailwind", "Bootstrap"}, "Frontend CSS"))
-		cssm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *cssm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
-		}
+		if applicationType == "Frontend" || applicationType == "Full Stack" {
 
-		frontendCSS := cssm.(*menuinput.ListModel).Choice
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Frontend Framework", []string{"React", "Vue", "Svelte", "Vanilla"}, "Frontend Framework"))
+			fm, err := tprogram.Run()
+			handleError(err, fm)
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend Language", []string{"Typescript", "Javascript"}, "Frontend Language"))
-		lm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *lm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
-		}
+			frontendFramework = fm.(*menuinput.ListModel).Choice
 
-		frontendLanguage := lm.(*menuinput.ListModel).Choice
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend CSS", []string{"CSS", "Tailwind", "Bootstrap"}, "Frontend CSS"))
+			cssm, err := tprogram.Run()
+			handleError(err, cssm)
+			frontendCSS = cssm.(*menuinput.ListModel).Choice
 
-		currentStep++
-		fmt.Printf("\n%s Configuring frontend...\n", common.OperationLabel)
-		fmt.Printf(" \n ├── %s Frontend Language: %s\n", common.SuccessLabel, frontendLanguage)
-		fmt.Printf(" │\n ├── %s Frontend Framework: %s\n", common.SuccessLabel, frontendFramework)
-		fmt.Printf(" │\n └── %s Frontend CSS: %s\n", common.SuccessLabel, frontendCSS)
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Frontend Language", []string{"Typescript", "Javascript"}, "Frontend Language"))
+			lm, err := tprogram.Run()
+			handleError(err, lm)
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Language", []string{"Go", "Python", "Node", "TypeScript(Node)"}, "Backend Language"))
-		blm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *blm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
+			frontendLanguage = lm.(*menuinput.ListModel).Choice
+
+			currentStep++
+			fmt.Printf("\n%s Configuring frontend...\n", common.OperationLabel)
+			fmt.Printf(" \n ├── %s Frontend Language: %s\n", common.SuccessLabel, frontendLanguage)
+			fmt.Printf(" │\n ├── %s Frontend Framework: %s\n", common.SuccessLabel, frontendFramework)
+			fmt.Printf(" │\n └── %s Frontend CSS: %s\n", common.SuccessLabel, frontendCSS)
+
 		}
 
-		backendLanguage := blm.(*menuinput.ListModel).Choice
-		backendLanguage = strings.ToLower(backendLanguage)
+		if applicationType == "Backend" || applicationType == "Full Stack" {
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Language", []string{"Go", "Python", "Node", "TypeScript(Node)"}, "Backend Language"))
+			blm, err := tprogram.Run()
+			handleError(err, blm)
 
-		var frameworkOpts []string
-		switch backendLanguage {
-		case "go":
-			frameworkOpts = pkg.BackendGoFrameworks
-		case "python", "py":
-			frameworkOpts = pkg.BackendPythonFrameworks
-		case "node", "typescript(node)", "js", "ts", "typescript":
-			frameworkOpts = pkg.BackendNodeFrameworks
-		default:
-			fmt.Println(common.ErrorLabel + " Error validating language: Invalid language")
-			os.Exit(1)
-		}
+			backendLanguage = blm.(*menuinput.ListModel).Choice
+			backendLanguage = strings.ToLower(backendLanguage)
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", frameworkOpts, "Backend Framework"))
-		bfm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *bfm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
-		}
+			var frameworkOpts []string
+			switch backendLanguage {
+			case "go":
+				frameworkOpts = pkg.BackendGoFrameworks
+			case "python", "py":
+				frameworkOpts = pkg.BackendPythonFrameworks
+			case "node", "typescript(node)", "js", "ts", "typescript":
+				frameworkOpts = pkg.BackendNodeFrameworks
+			default:
+				fmt.Println(common.ErrorLabel + " Error validating language: Invalid language")
+				os.Exit(1)
+			}
 
-		backendFramework := bfm.(*menuinput.ListModel).Choice
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Backend Framework", frameworkOpts, "Backend Framework"))
+			bfm, err := tprogram.Run()
+			if err != nil {
+				fmt.Println(common.ErrorLabel+" Error running program:", err)
+				os.Exit(1)
+			}
+			if *bfm.(*menuinput.ListModel).Quitting {
+				os.Exit(0)
+			}
 
-		tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Database", []string{"PostgreSQL", "MongoDB", "None"}, "Backend Database"))
-		bdm, err := tprogram.Run()
-		if err != nil {
-			fmt.Println(common.ErrorLabel+" Error running program:", err)
-			os.Exit(1)
-		}
-		if *bdm.(*menuinput.ListModel).Quitting {
-			os.Exit(0)
-		}
+			backendFramework = bfm.(*menuinput.ListModel).Choice
 
-		backendDatabase := bdm.(*menuinput.ListModel).Choice
-		currentStep++
-		fmt.Printf("\n%s Configuring backend...\n", common.OperationLabel)
-		fmt.Printf(" │\n ├── %s Backend Language: %s\n", common.SuccessLabel, backendLanguage)
-		fmt.Printf(" │\n ├── %s Backend Framework: %s\n", common.SuccessLabel, backendFramework)
-		fmt.Printf(" │\n └── %s Backend Database: %s\n", common.SuccessLabel, backendDatabase)
+			tprogram = tea.NewProgram(menuinput.InitialMenuInput(3, 2, "Backend Database", []string{"PostgreSQL", "MongoDB", "None"}, "Backend Database"))
+			bdm, err := tprogram.Run()
+			if err != nil {
+				fmt.Println(common.ErrorLabel+" Error running program:", err)
+				os.Exit(1)
+			}
+			if *bdm.(*menuinput.ListModel).Quitting {
+				os.Exit(0)
+			}
+
+			backendDatabase = bdm.(*menuinput.ListModel).Choice
+			currentStep++
+			fmt.Printf("\n%s Configuring backend...\n", common.OperationLabel)
+			fmt.Printf(" │\n ├── %s Backend Language: %s\n", common.SuccessLabel, backendLanguage)
+			fmt.Printf(" │\n ├── %s Backend Framework: %s\n", common.SuccessLabel, backendFramework)
+			fmt.Printf(" │\n └── %s Backend Database: %s\n", common.SuccessLabel, backendDatabase)
+		}
 
 		preset = pkg.Preset{
 			Frontend: pkg.FrontendConfig{
@@ -227,32 +205,32 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Project Structure", []string{"Monorepo", "Polyrepos"}, "Project Structure"))
-	projectStructure, err := tprogram.Run()
-	if err != nil {
-		fmt.Println(common.ErrorLabel+" Error running program:", err)
-		os.Exit(1)
-	}
-	if *projectStructure.(*menuinput.ListModel).Quitting {
-		os.Exit(0)
-	}
-
-	projectStructureChoice := projectStructure.(*menuinput.ListModel).Choice
-	monorepo := false
+	monorepo := true
 	polyrepos := false
-
-	wd, _ := os.Getwd()
 	var frontendOutputPath, backendOutputPath string
-	if projectStructureChoice == "Monorepo" {
-		monorepo = true
-		frontendOutputPath = wd + "/" + projectName + "/frontend"
-		backendOutputPath = wd + "/" + projectName + "/backend"
-	}
 
-	if projectStructureChoice == "Polyrepos" {
-		polyrepos = true
-		frontendOutputPath = wd + "/" + projectName + "-frontend"
-		backendOutputPath = wd + "/" + projectName + "-backend"
+	if applicationType == "Full Stack" {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Project Structure", []string{"Monorepo", "Polyrepos"}, "Project Structure"))
+		projectStructure, err := tprogram.Run()
+		handleError(err, projectStructure)
+
+		projectStructureChoice := projectStructure.(*menuinput.ListModel).Choice
+		monorepo = false
+		polyrepos = false
+
+		wd, _ := os.Getwd()
+
+		if projectStructureChoice == "Monorepo" {
+			monorepo = true
+			frontendOutputPath = wd + "/" + projectName + "/frontend"
+			backendOutputPath = wd + "/" + projectName + "/backend"
+		}
+
+		if projectStructureChoice == "Polyrepos" {
+			polyrepos = true
+			frontendOutputPath = wd + "/" + projectName + "-frontend"
+			backendOutputPath = wd + "/" + projectName + "-backend"
+		}
 	}
 
 	dryRun, _ := cmd.Flags().GetBool("dry-run")
@@ -261,42 +239,47 @@ func RunCreate(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
-	fmt.Printf("\n%s Creating frontend project...\n", common.OperationLabel)
+	if applicationType == "Frontend" || applicationType == "Full Stack" {
+        fmt.Printf("\n%s Creating frontend project...\n", common.OperationLabel)
 
-	frontendScaffold := frontend.NewFrontendBuilder().
-		ProjectName(projectName).
-		Language(preset.Frontend.Language).
-		Framework(preset.Frontend.Framework).
-		CSS(preset.Frontend.CSS).
-		Monorepo(monorepo).
-		Polyrepos(polyrepos).
-		Build()
+        frontendScaffold := frontend.NewFrontendBuilder().
+            ProjectName(projectName).
+            Language(preset.Frontend.Language).
+            Framework(preset.Frontend.Framework).
+            CSS(preset.Frontend.CSS).
+            Monorepo(monorepo).
+            Polyrepos(polyrepos).
+            Build()
 
-	if err := frontendScaffold.Generate(); err != nil {
-		fmt.Println("Error creating frontend project:", err)
-		os.Exit(1)
+        if err := frontendScaffold.Generate(); err != nil {
+            fmt.Println("Error creating frontend project:", err)
+            os.Exit(1)
+        }
+
+        fmt.Printf(" \n └── %s Frontend\n", common.SuccessLabel)
+        fmt.Printf("     File created: %s\n", lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(frontendOutputPath))
 	}
 
-	fmt.Printf(" \n └── %s Frontend\n", common.SuccessLabel)
-	fmt.Printf("     File created: %s\n", lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(frontendOutputPath))
+    if applicationType == "Backend" || applicationType == "Full Stack" {
+        fmt.Printf("\n%s Creating backend project...\n", common.OperationLabel)
 
-	fmt.Printf("\n%s Creating backend project...\n", common.OperationLabel)
+        backend := backend.NewBackendBuilder().
+            ProjectName(projectName).
+            Language(preset.Backend.Language).
+            Framework(preset.Backend.Framework).
+            Database(preset.Backend.Database).
+            Monorepo(monorepo).
+            Polyrepos(polyrepos).
+            Build()
 
-	backend := backend.NewBackendBuilder().
-		ProjectName(projectName).
-		Language(preset.Backend.Language).
-		Framework(preset.Backend.Framework).
-		Database(preset.Backend.Database).
-		Monorepo(monorepo).
-		Polyrepos(polyrepos).
-		Build()
+        if err := backend.Generate(); err != nil {
+            fmt.Println(common.ErrorLabel+" Error creating backend project:", err)
+            os.Exit(1)
+        }
 
-	if err := backend.Generate(); err != nil {
-		fmt.Println(common.ErrorLabel+" Error creating backend project:", err)
-		os.Exit(1)
-	}
+        fmt.Printf("\n └── %s Backend\n", common.SuccessLabel)
+    }
 
-	fmt.Printf("\n └── %s Backend\n", common.SuccessLabel)
 	fmt.Printf("     File created: %s\n", lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Render(backendOutputPath))
 
 	if monorepo {
@@ -331,4 +314,21 @@ func getIndexOfStack(stack string, stackOpts []string) int {
 		}
 	}
 	return -1
+}
+
+func handleError(err error, m tea.Model) {
+	if err != nil {
+		fmt.Println(common.ErrorLabel+"Error running program: ", err)
+	}
+
+	switch mod := m.(type) {
+	case *menuinput.ListModel:
+		if *mod.Quitting {
+			os.Exit(0)
+		}
+	case *textinput.Model:
+		if *mod.Quitting {
+			os.Exit(0)
+		}
+	}
 }

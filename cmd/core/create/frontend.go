@@ -7,6 +7,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sersi-project/sersi/common"
+	"github.com/sersi-project/sersi/internal/scaffold/devops"
 	"github.com/sersi-project/sersi/internal/scaffold/frontend"
 	"github.com/sersi-project/sersi/internal/tui/menuinput"
 	"github.com/sersi-project/sersi/internal/tui/textinput"
@@ -29,6 +30,8 @@ func init() {
 	FrontendCmd.Flags().StringP("css", "s", "", "Styling for template")
 	FrontendCmd.Flags().StringP("lang", "l", "", "Javascript or Typescript")
 	FrontendCmd.Flags().Bool("dry-run", false, "Dry run for testing")
+	FrontendCmd.Flags().StringP("ci", "c", "", "CI for template")
+	FrontendCmd.Flags().StringP("container", "d", "", "Container for template")
 }
 
 func RunFrontend(cmd *cobra.Command, args []string) {
@@ -161,4 +164,62 @@ func RunFrontend(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	fmt.Printf(" │\n ├── %s Frontend project created successfully at %s\n", common.SuccessLabel, frontend.ProjectName)
+
+	ci, _ := cmd.Flags().GetString("ci")
+	container, _ := cmd.Flags().GetString("container")
+	if ci == "" {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Devops CI", pkg.DevopsCI, "CI"))
+		cim, err := tprogram.Run()
+		if err != nil {
+			fmt.Println("Error running program:", err)
+			os.Exit(1)
+		}
+		if *cim.(*menuinput.ListModel).Quitting {
+			os.Exit(0)
+		}
+		ci = cim.(*menuinput.ListModel).Choice
+		if ci == "" {
+			os.Exit(0)
+		}
+	}
+	if err := pkg.ValidateOptions(strings.ToLower(ci), pkg.DevopsCI); err != nil {
+		fmt.Printf(" │\n ├── %s Error validating CI: %s\n", common.ErrorLabel, err)
+		os.Exit(1)
+	}
+	fmt.Printf(" │\n ├── %s CI successfully set to: %s\n", common.SuccessLabel, ci)
+
+	if container == "" {
+		tprogram = tea.NewProgram(menuinput.InitialMenuInput(totalSteps, currentStep, "Devops Container", pkg.DevopsContainers, "Container"))
+		cm, err := tprogram.Run()
+		if err != nil {
+			fmt.Println("Error running program:", err)
+			os.Exit(1)
+		}
+		if *cm.(*menuinput.ListModel).Quitting {
+			os.Exit(0)
+		}
+		container = cm.(*menuinput.ListModel).Choice
+		if container == "" {
+			os.Exit(0)
+		}
+	}
+	if err := pkg.ValidateOptions(strings.ToLower(container), pkg.DevopsContainers); err != nil {
+		fmt.Printf(" │\n ├── %s Error validating container: %s\n", common.ErrorLabel, err)
+		os.Exit(1)
+	}
+	fmt.Printf(" │\n ├── %s Container successfully set to: %s\n", common.SuccessLabel, container)
+
+	devops := devops.NewDevopsBuilder().
+		ProjectName(projectName).
+		CI(ci).
+		Container(container).
+		Build()
+
+	err = devops.Generate(lang)
+	if err != nil {
+		fmt.Printf("\n%s Error creating devops project: %s\n", common.ErrorLabel, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf(" │\n ├── %s Devops project created successfully at %s\n", common.SuccessLabel, devops.ProjectName)
 }
